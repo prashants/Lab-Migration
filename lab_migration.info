@@ -1,0 +1,6 @@
+name = Lab Migration
+description = IIT Bombay Lab Migration project
+package = IITB
+version = VERSION
+core = 6.x
+
