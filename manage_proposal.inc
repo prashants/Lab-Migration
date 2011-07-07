@@ -6,14 +6,12 @@ function _proposal_pending()
   /* get pending proposals to be approved */
   $pending_rows = array();
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE approval_status = 0 ORDER BY id DESC");
-  while ($pending_data = db_fetch_object($pending_q))
-  {
+  while ($pending_data = db_fetch_object($pending_q)) {
     $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->department, $pending_data->university, $pending_data->lab_title, l('Approve', 'lab_migration/manage_proposal/approve/' . $pending_data->id) . ' | ' . l('Edit', '/lab_migration/manage_proposal/edit/' . $pending_data->id));
   }
 
   /* check if there are any pending proposals */
-  if (!$pending_rows)
-  {
+  if (!$pending_rows) {
     drupal_set_message(t('There are no pending proposals.'), 'status');
     return '';
   }
@@ -28,23 +26,19 @@ function _proposal_all()
   /* get pending proposals to be approved */
   $proposal_rows = array();
   $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} ORDER BY id DESC");
-  while ($proposal_data = db_fetch_object($proposal_q))
-  {
+  while ($proposal_data = db_fetch_object($proposal_q)) {
     $proposal_status = '';
-    switch ($proposal_data->approval_status)
-    {
+    switch ($proposal_data->approval_status) {
     case 0: $proposal_status = 'Pending'; break;
     case 1: $proposal_status = 'Approved'; break;
     case 2: $proposal_status = 'Dis-approved'; break;
-    case 3: $proposal_status = 'Completed'; break;
     default: $proposal_status = 'Unknown'; break;
     }
     $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id)); 
   }
 
   /* check if there are any pending proposals */
-  if (!$proposal_rows)
-  {
+  if (!$proposal_rows) {
     drupal_set_message(t('There are no proposals.'), 'status');
     return '';
   }

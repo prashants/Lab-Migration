@@ -4,7 +4,8 @@
 /**
  * Implementation of hook_install().
  */
-function lab_migration_install() {
+function lab_migration_install()
+{
   // Create tables.
   drupal_install_schema('lab_migration');
   // Set variables
@@ -20,7 +21,8 @@ function lab_migration_install() {
 /**
  * Implementation of hook_uninstall().
  */
-function lab_migration_uninstall() {
+function lab_migration_uninstall()
+{
   // Remove tables.
   drupal_uninstall_schema('lab_migration');
   // Remove variables
@@ -32,8 +34,8 @@ function lab_migration_uninstall() {
 /**
  * Implementation of hook_schema().
  */
-function lab_migration_schema() {
-
+function lab_migration_schema()
+{
 	$schema['lab_migration_proposal'] = array(
 		'description' => t('TODO: please describe this table!'),
 		'fields' => array(

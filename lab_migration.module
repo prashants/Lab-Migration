@@ -83,7 +83,8 @@ function lab_migration_menu()
 /**
  * Implementation of hook_perm().
  */
-function lab_migration_perm() {
+function lab_migration_perm()
+{
   return array('create proposal', 'reply proposal', 'approve proposal', 'view questions', 'view answers', 'administer lab migration');
 }
 
@@ -94,8 +95,7 @@ function lab_migration_mail($key, &$message, $params)
 {
   global $user;
   $language = $message['language'];
-  switch ($key)
-  {
+  switch ($key) {
     case 'proposal_received':
       /* initializing data */
       $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_received']['proposal_id']);
@@ -189,7 +189,8 @@ Lab Migration Team
 /**************************** GENERAL FUNCTION ********************************/
 /******************************************************************************/
 
-function lab_migration_path() {
+function lab_migration_path()
+{
   return $_SERVER['DOCUMENT_ROOT'] . base_path() . 'sites/default/files/lab_migration/';
 }
 
@@ -197,7 +198,8 @@ function lab_migration_path() {
 /*************************** VALIDATION FUNCTIONS *****************************/
 /******************************************************************************/
 
-function lab_migration_check_valid_filename($file_name) {
+function lab_migration_check_valid_filename($file_name)
+{
   if (!preg_match('/^[0-9a-zA-Z\_\.]+$/', $file_name))
     return FALSE;
   else
