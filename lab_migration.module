@@ -8,7 +8,6 @@ function lab_migration_menu()
 {
   $items = array();
 
-  /* for admin */
   $items['lab_migration/proposal'] = array(
     'title' => 'Lab Migration Proposal',
     'description' => 'Lab Migration Proposal', 
@@ -17,6 +16,45 @@ function lab_migration_menu()
     'access arguments' => array('create proposal'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'proposal.inc',
+  );
+
+  /* for reviewers */
+  $items['lab_migration/manage_proposal'] = array(
+    'title' => 'Manage Lab Migration Proposals',
+    'description' => 'Manage Lab Migration Proposals',
+    'page callback' => '_proposal_pending',
+    'access callback' => 'user_access',
+    'access arguments' => array('approve proposal'),
+    'file' => 'manage_proposal.inc',
+  );
+  $items['lab_migration/manage_proposal/pending'] = array(
+    'title' => 'Pending Proposals',
+    'description' => 'Pending Lab Migration Proposals Queue',
+    'page callback' => '_proposal_pending',
+    'access callback' => 'user_access',
+    'access arguments' => array('approve proposal'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'file' => 'manage_proposal.inc',
+  );
+  $items['lab_migration/manage_proposal/all'] = array(
+    'title' => 'All Proposals',
+    'description' => 'All Proposals',
+    'page callback' => '_proposal_all',
+    'access callback' => 'user_access',
+    'access arguments' => array('approve proposal'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+    'file' => 'manage_proposal.inc',
+  );
+  $items['lab_migration/manage_proposal/approve'] = array(
+    'title' => 'Approve Proposal',
+    'description' => 'Approve Proposal',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('proposal_approval_form'),
+    'access arguments' => array('approve proposal'),
+    'type' => MENU_CALLBACK,
+    'file' => 'manage_proposal.inc',
   );
 
   /* for admin */
@@ -73,102 +111,61 @@ Your proposal is under review and you will soon receive an email from us regardi
 
 Best Wishes,
 
+Lab Migration Team
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
     case 'proposal_disapproved':
       /* initializing data */
-      $proposal_q = db_query("SELECT * FROM {textbook_companion_proposal} WHERE id = %d LIMIT 1", $params['proposal_disapproved']['proposal_id']);
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_disapproved']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
-      $preference1_q = db_query("SELECT * FROM {textbook_companion_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 1);
-      $preference1_data = db_fetch_object($preference1_q);
-      $preference2_q = db_query("SELECT * FROM {textbook_companion_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 2);
-      $preference2_data = db_fetch_object($preference2_q);
-      $preference3_q = db_query("SELECT * FROM {textbook_companion_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 3);
-      $preference3_data = db_fetch_object($preference3_q);
       $user_data = user_load($params['proposal_disapproved']['user_id']);
 
-      $message['subject'] = t('[!site_name] Your book proposal has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Your Lab migration proposal has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Your following book proposal has been disapproved:
+Your following Lab migration proposal has been disapproved:
 
 Reason for disapproval: ' . $proposal_data->message . '
 
-Full Name : ' . $proposal_data->full_name . '
+Name of the Professor : ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Mobile : ' . $proposal_data->mobile . '
-Course : ' . $proposal_data->course . '
-Department/Branch : ' . $proposal_data->branch . '
+Contact Phone No. : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' .  $proposal_data->university . '
-College Teacher / Professor : ' . $proposal_data->faculty . '
-Reviewer : ' .  $proposal_data->reviewer . '
-Expected date of completion : ' .  date('d-m-Y', $proposal_data->completion_date) . '
-
-Your Book Preferences :
-
-Book Preference 1 :-
-Title of the book : ' . $preference1_data->book . '
-Author name : ' . $preference1_data->author . '
-ISBN No. : ' . $preference1_data->isbn . '
-Publisher and Place : ' . $preference1_data->publisher . '
-Edition : ' . $preference1_data->edition . '
-Year of publication : ' . $preference1_data->year . '
-
-Book Preference 2 :-
-Title of the book : ' . $preference2_data->book . '
-Author name : ' . $preference2_data->author . '
-ISBN No. : ' . $preference2_data->isbn . '
-Publisher and Place : ' . $preference2_data->publisher . '
-Edition : ' . $preference2_data->edition . '
-Year of publication : ' . $preference2_data->year . '
-
-Book Preference 3 :-
-Title of the book : ' . $preference3_data->book . '
-Author name : ' . $preference3_data->author . '
-ISBN No. : ' . $preference3_data->isbn . '
-Publisher and Place : ' . $preference3_data->publisher . '
-Edition : ' . $preference3_data->edition . '
-Year of publication : ' . $preference3_data->year . '
+Title of the Lab : ' . $proposal_data->lab_title . '
+Topic of the Problem : ' .  $proposal_data->problem_topic . '
 
 Best Wishes,
 
+Lab Migration Team
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
     case 'proposal_approved':
-      $proposal_q = db_query("SELECT * FROM {textbook_companion_proposal} WHERE id = %d LIMIT 1", $params['proposal_approved']['proposal_id']);
+      /* initializing data */
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_approved']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
-      $approved_preference_q = db_query("SELECT * FROM {textbook_companion_preference} WHERE proposal_id = %d AND approval_status = 1 LIMIT 1", $params['proposal_approved']['proposal_id']);
-      $approved_preference_data = db_fetch_object($approved_preference_q);
       $user_data = user_load($params['proposal_approved']['user_id']);
 
-      $message['subject'] = t('[!site_name] Your book proposal has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Your Lab migration proposal has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Your following book proposal has been approved:
+Your following Lab migration proposal has been approved:
 
-Full Name : ' . $proposal_data->full_name . '
+Name of the Professor : ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Mobile : ' .  $proposal_data->mobile . '
-Course : ' . $proposal_data->course . '
-Department/Branch : ' . $proposal_data->branch . '
+Contact Phone No. : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' .  $proposal_data->university . '
-College Teacher / Professor : ' . $proposal_data->faculty . '
-Reviewer : ' .  $proposal_data->reviewer . '
-Expected date of completion : ' .  date('d-m-Y', $proposal_data->completion_date) . '
-
-Title of the book : ' . $approved_preference_data->book . '
-Author name : ' . $approved_preference_data->author . '
-ISBN No. : ' . $approved_preference_data->isbn . '
-Publisher and Place : ' . $approved_preference_data->publisher . '
-Edition : ' . $approved_preference_data->edition . '
-Year of publication : ' . $approved_preference_data->year . '
+Title of the Lab : ' . $proposal_data->lab_title . '
+Topic of the Problem : ' .  $proposal_data->problem_topic . '
 
 Best Wishes,
 
+Lab Migration Team
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
