@@ -18,13 +18,22 @@ function lab_migration_menu()
     'file' => 'proposal.inc',
   );
 
+  $items['lab_migration/labs'] = array(
+    'title' => 'Migrated Labs',
+    'description' => 'Migrated Labs', 
+    'page callback' => 'migrated_labs',
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'migrated_labs.inc',
+  );
+
   /* for reviewers */
   $items['lab_migration/manage_proposal'] = array(
     'title' => 'Manage Lab Migration Proposals',
     'description' => 'Manage Lab Migration Proposals',
     'page callback' => '_proposal_pending',
     'access callback' => 'user_access',
-    'access arguments' => array('approve proposal'),
+    'access arguments' => array('manage proposal'),
     'file' => 'manage_proposal.inc',
   );
   $items['lab_migration/manage_proposal/pending'] = array(
@@ -32,7 +41,7 @@ function lab_migration_menu()
     'description' => 'Pending Lab Migration Proposals Queue',
     'page callback' => '_proposal_pending',
     'access callback' => 'user_access',
-    'access arguments' => array('approve proposal'),
+    'access arguments' => array('manage proposal'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 1,
     'file' => 'manage_proposal.inc',
@@ -42,7 +51,7 @@ function lab_migration_menu()
     'description' => 'All Proposals',
     'page callback' => '_proposal_all',
     'access callback' => 'user_access',
-    'access arguments' => array('approve proposal'),
+    'access arguments' => array('manage proposal'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
     'file' => 'manage_proposal.inc',
@@ -52,7 +61,7 @@ function lab_migration_menu()
     'description' => 'Approve Proposal',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('proposal_approval_form'),
-    'access arguments' => array('approve proposal'),
+    'access arguments' => array('manage proposal'),
     'type' => MENU_CALLBACK,
     'file' => 'manage_proposal.inc',
   );
@@ -61,7 +70,7 @@ function lab_migration_menu()
     'description' => 'Edit Proposal',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('proposal_edit_form'),
-    'access arguments' => array('approve proposal'),
+    'access arguments' => array('manage proposal'),
     'type' => MENU_CALLBACK,
     'file' => 'manage_proposal.inc',
   );
@@ -85,7 +94,7 @@ function lab_migration_menu()
  */
 function lab_migration_perm()
 {
-  return array('create proposal', 'reply proposal', 'approve proposal', 'view questions', 'view answers', 'administer lab migration');
+  return array('create proposal', 'manage proposal', 'administer lab migration');
 }
 
 /**
@@ -200,7 +209,7 @@ function lab_migration_path()
 
 function lab_migration_check_valid_filename($file_name)
 {
-  if (!preg_match('/^[0-9a-zA-Z\_\.]+$/', $file_name))
+  if (!preg_match('/^[0-9a-zA-Z\_\.\-]+$/', $file_name))
     return FALSE;
   else
     if (substr_count($file_name, ".") > 1)
