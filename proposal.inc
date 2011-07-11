@@ -7,9 +7,15 @@ function lab_migration_proposal_form($form_state)
 
   $form['#attributes'] = array('enctype' => "multipart/form-data");
 
+  $form['name_title'] = array(
+    '#type' => 'select',
+    '#title' => t('Title'),
+    '#options' => array('Mr' => 'Mr', 'Ms' => 'Ms', 'Mrs' => 'Mrs', 'Dr' => 'Dr', 'Prof' => 'Prof'),
+    '#required' => TRUE,
+  );
   $form['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Name of the Professor'),
+    '#title' => t('Name of the Proposer'),
     '#size' => 30,
     '#maxlength' => 50,
     '#required' => TRUE,
@@ -134,10 +140,11 @@ function lab_migration_proposal_form_submit($form, &$form_state)
 
   /* inserting the user proposal */
   $result = db_query("INSERT INTO {lab_migration_proposal}
-    (uid, approver_uid, name, contact_ph, department, university, lab_title, problem_topic, approval_status, creation_date, approval_date) VALUES
-    (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d)",
+    (uid, approver_uid, name_title, name, contact_ph, department, university, lab_title, problem_topic, approval_status, creation_date, approval_date) VALUES
+    (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d)",
     $user->uid,
     0,
+    $form_state['values']['name_title'],
     $form_state['values']['name'],
     $form_state['values']['contact_ph'],
     $form_state['values']['department'],
@@ -188,22 +195,24 @@ function lab_migration_proposal_form_submit($form, &$form_state)
 	}
 
 	/* uploading file */
-	$filename = $_FILES['files']['name']['supplementary_file'];
-	if (move_uploaded_file($_FILES['files']['tmp_name']['supplementary_file'], $root_path . $dest_path . $filename))
-	{
-		/* for uploaded files making an entry in the database */
-		db_query("INSERT INTO {lab_migration_files} (link_id, filename, filepath, filemime, filesize, filetype, timestamp)
-			VALUES (%d, '%s', '%s', '%s', %d, '%s', %d)",
-			$proposal_id,
-			$filename,
-			$dest_path . $filename,
-			$_FILES['files']['type']['supplementary_file'],
-			$_FILES['files']['size']['supplementary_file'],
-			'S',
-			time()
-			);
-	} else {
-		drupal_set_message('Error uploading file : ' . $dest_path . '/' . $filename, 'error');
+	if ($_FILES['files']['name']['supplementary_file']) {
+		$filename = $_FILES['files']['name']['supplementary_file'];
+		if (move_uploaded_file($_FILES['files']['tmp_name']['supplementary_file'], $root_path . $dest_path . $filename))
+		{
+			/* for uploaded files making an entry in the database */
+			db_query("INSERT INTO {lab_migration_files} (link_id, filename, filepath, filemime, filesize, filetype, timestamp)
+				VALUES (%d, '%s', '%s', '%s', %d, '%s', %d)",
+				$proposal_id,
+				$filename,
+				$dest_path . $filename,
+				$_FILES['files']['type']['supplementary_file'],
+				$_FILES['files']['size']['supplementary_file'],
+				'S',
+				time()
+				);
+		} else {
+			drupal_set_message('Error uploading file : ' . $dest_path . '/' . $filename, 'error');
+		}
 	}
 
   /* sending email */

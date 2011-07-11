@@ -14,13 +14,19 @@ function migrated_labs()
   	$file_links = '';
   	$problem_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'P'", $labs_data->id);
   	$problem_data = db_fetch_object($problem_q);
-  	$file_links .= '<br/>' . l('Problem Statment', $dl_root_path . $problem_data->filepath);
+  	$file_links .= '<br/>' . l('Problem Statement', $dl_root_path . $problem_data->filepath);
   	$sup_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'S'", $labs_data->id);
   	$sup_data = db_fetch_object($sup_q);
   	if ($sup_data)
   		$file_links .= '<br/>' . l('Suplementary Files', $dl_root_path . $sup_data->filepath);
 
-    $labs_rows[] = array($labs_data->university, $labs_data->lab_title, $labs_data->problem_topic . $file_links, l($labs_data->name, 'user/' . $labs_data->uid) . '<br/>' . $labs_data->department);
+  	$migration_status = '';
+  	switch ($labs_data) {
+  	case 1: $migration_status = '(In Progress)'; break;
+  	case 3: $migration_status = '(Completed)'; break;
+  	}
+
+    $labs_rows[] = array($labs_data->university . '<br/>' . $migration_status, $labs_data->lab_title, $labs_data->problem_topic . $file_links, l($labs_data->name_title . ' ' . $labs_data->name, 'user/' . $labs_data->uid) . '<br/>' . $labs_data->department);
   }
 
   /* check if there are any pending proposals */

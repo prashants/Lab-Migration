@@ -117,7 +117,7 @@ Dear !user_name,
 
 We have received your following lab migration proposal:
 
-Name of the Professor : ' . $proposal_data->name . '
+Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
 Contact Phone No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
@@ -147,7 +147,7 @@ Your following Lab migration proposal has been disapproved:
 
 Reason for disapproval: ' . $proposal_data->message . '
 
-Name of the Professor : ' . $proposal_data->name . '
+Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
 Contact Phone No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
@@ -173,7 +173,7 @@ Dear !user_name,
 
 Your following Lab migration proposal has been approved:
 
-Name of the Professor : ' . $proposal_data->name . '
+Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
 Contact Phone No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '

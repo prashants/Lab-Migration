@@ -7,7 +7,7 @@ function _proposal_pending()
   $pending_rows = array();
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE approval_status = 0 ORDER BY id DESC");
   while ($pending_data = db_fetch_object($pending_q)) {
-    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->department, $pending_data->university, $pending_data->lab_title, l('Approve', 'lab_migration/manage_proposal/approve/' . $pending_data->id) . ' | ' . l('Edit', '/lab_migration/manage_proposal/edit/' . $pending_data->id));
+    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name_title . ' ' . $pending_data->name, 'user/' . $pending_data->uid), $pending_data->department, $pending_data->university, $pending_data->lab_title, l('Approve', 'lab_migration/manage_proposal/approve/' . $pending_data->id) . ' | ' . l('Edit', '/lab_migration/manage_proposal/edit/' . $pending_data->id));
   }
 
   /* check if there are any pending proposals */
@@ -16,7 +16,7 @@ function _proposal_pending()
     return '';
   }
 
-  $pending_header = array('Date of Submission', 'Name of the Professor', 'Department/Branch', 'University/Institute', 'Title of the Lab', 'Action');
+  $pending_header = array('Date of Submission', 'Name of the Proposer', 'Department/Branch', 'University/Institute', 'Title of the Lab', 'Action');
   $output = theme_table($pending_header, $pending_rows);
   return $output; 
 }
@@ -34,7 +34,7 @@ function _proposal_all()
     case 2: $proposal_status = 'Dis-approved'; break;
     default: $proposal_status = 'Unknown'; break;
     }
-    $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id)); 
+    $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id)); 
   }
 
   /* check if there are any pending proposals */
@@ -43,7 +43,7 @@ function _proposal_all()
     return '';
   }
 
-  $proposal_header = array('Date of Submission', 'Name of the Professor', 'Department/Branch', 'University/Institute', 'Title of the Lab', 'Status', 'Action');
+  $proposal_header = array('Date of Submission', 'Name of the Proposer', 'Department/Branch', 'University/Institute', 'Title of the Lab', 'Status', 'Action');
   $output = theme_table($proposal_header, $proposal_rows);
   return $output; 
 }
@@ -66,10 +66,15 @@ function proposal_approval_form($form_state)
     return;
   }
 
+  $form['name_title'] = array(
+    '#type' => 'item',
+    '#value' => $row->name_title,
+    '#title' => t('Title'),
+  );
   $form['name'] = array(
     '#type' => 'item',
     '#value' => l($row->name, 'user/' . $row->uid),
-    '#title' => t('Name of the Professor'),
+    '#title' => t('Name of the Proposer'),
   );
   $form['email'] = array(
     '#type' => 'item',
@@ -222,6 +227,7 @@ function proposal_approval_form_submit($form, &$form_state)
 function proposal_edit_form($form_state)
 {
   global $user;
+  $dl_root_path = 'sites/default/files/lab_migration/';
 
   /* get current proposal */
   $proposal_id = arg(3);
@@ -234,9 +240,16 @@ function proposal_edit_form($form_state)
 
   $user_data = user_load($proposal_data->uid);
 
+  $form['name_title'] = array(
+    '#type' => 'select',
+    '#title' => t('Title'),
+    '#options' => array('Mr' => 'Mr', 'Ms' => 'Ms', 'Mrs' => 'Mrs', 'Dr' => 'Dr', 'Prof' => 'Prof'),
+    '#required' => TRUE,
+    '#default_value' => $row->name_title,
+  );
   $form['name'] = array(
     '#type' => 'textfield',
-    '#title' => t('Name of the Professor'),
+    '#title' => t('Name of the Proposer'),
     '#size' => 30,
     '#maxlength' => 50,
     '#required' => TRUE,
@@ -347,7 +360,8 @@ function proposal_edit_form_submit($form, &$form_state)
     return;
   }
 
-  db_query("UPDATE {lab_migration_proposal} SET name = '%s', contact_ph = '%s', department = '%s', university = '%s', lab_title = '%s', problem_topic = '%s' WHERE id = %d",
+  db_query("UPDATE {lab_migration_proposal} SET name_title = '%s', name = '%s', contact_ph = '%s', department = '%s', university = '%s', lab_title = '%s', problem_topic = '%s' WHERE id = %d",
+  	$form_state['values']['name_title'],
     $form_state['values']['name'],
     $form_state['values']['contact_ph'],
     $form_state['values']['department'],
