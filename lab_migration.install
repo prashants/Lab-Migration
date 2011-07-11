@@ -54,6 +54,12 @@ function lab_migration_schema()
 				'type' => 'int',
 				'not null' => TRUE,
 			),
+			'name_title' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '5',
+				'not null' => TRUE,
+			),
 			'name' => array(
 				'description' => t('TODO: please describe this field!'),
 				'type' => 'varchar',
