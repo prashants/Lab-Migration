@@ -29,7 +29,7 @@ function migrated_labs()
     return '';
   }
 
-  $labs_header = array('University', 'Title of the Lab', 'Title of the Problem', 'Professor Name and Dept.');
+  $labs_header = array('University/Institute', 'Title of the Lab', 'Title of the Problem', 'Name of the Proposer and Department');
   $output = theme_table($labs_header, $labs_rows);
   return $output; 
 }
