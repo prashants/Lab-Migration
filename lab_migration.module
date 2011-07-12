@@ -115,7 +115,7 @@ function lab_migration_mail($key, &$message, $params)
       $message['body'] = t('
 Dear !user_name,
 
-We have received your following lab migration proposal:
+We have received your proposal to migrate the lab in to Scilab, following details was submitted by you:
 
 Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
@@ -171,7 +171,7 @@ Lab Migration Team
       $message['body'] = t('
 Dear !user_name,
 
-Your following Lab migration proposal has been approved:
+Your following Lab migration proposal has been approved and solution is in progress. You will receive an email from us as soon as we will upload the solution. Please note that your solution will be made available on the Scilab portal.
 
 Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
