@@ -29,7 +29,7 @@ function lab_migration_menu()
 
   /* for reviewers */
   $items['lab_migration/manage_proposal'] = array(
-    'title' => 'Manage Lab Migration Proposals',
+    'title' => 'Manage Lab Migration',
     'description' => 'Manage Lab Migration Proposals',
     'page callback' => '_proposal_pending',
     'access callback' => 'user_access',

@@ -43,11 +43,9 @@ function proposal_solution_form($form_state)
     drupal_goto('lab_migration/manage_proposal/pending_proposal');
     return;
   }
-  if ($row->solution_status != 0) {
-    drupal_set_message(t('Selected Proposal has already been solved.'), 'error');
-    drupal_goto('lab_migration/manage_proposal/pending_proposal');
-    return;
-  }
+	if ($row->solution_status != 0) {
+		drupal_set_message(t('Selected Proposal has already been solved. You can reupload a new solution.'), 'status');
+	}
 
   $form['#attributes'] = array('enctype' => "multipart/form-data");
 
@@ -119,6 +117,16 @@ function proposal_solution_form($form_state)
 								. 'On : ' . date('d-m-Y', $row->approval_date),
 	);
 
+  $sol_file_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'A'", $row->id);
+  $sol_file_data = db_fetch_object($sol_file_q);
+  if ($sol_file_data) {
+		$form['sol_file'] = array(
+			'#type' => 'item',
+			'#value' => l($sol_file_data->filename, $dl_root_path . $sol_file_data->filepath),
+			'#title' => t('Solution file'),
+		);
+	}
+
   $form['solution_file'] = array(
 		'#type' => 'file',
 		'#title' => t('Upload solution statement'),
@@ -184,11 +192,24 @@ function proposal_solution_form_submit($form, &$form_state)
     drupal_goto('lab_migration/manage_proposal/pending_solution');
     return;
   }
-  if ($row->solution_status != 0) {
-    drupal_set_message(t('Selected Proposal has already been solved.'), 'error');
-    drupal_goto('lab_migration/manage_proposal/pending_solution');
-    return;
-  }
+
+	if ($row->solution_status == 1) {
+  	$files_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'A'", $proposal_id);
+  	while ($file_data = db_fetch_object($files_q)) {
+			if (!file_exists($root_path . $file_data->filepath)) {
+				drupal_set_message(t('Error deleting !file. File does not exists.', array('!file' => $file_data->filepath)), 'error');
+				return;
+			}
+			/* removing file */
+			if (!unlink($root_path . $file_data->filepath)) {
+				drupal_set_message(t('Error deleting !file', array('!file' => $file_data->filepath)), 'error');
+				return;
+			} else {
+				/* deleting example files database entries */
+				db_query("DELETE FROM {lab_migration_files} WHERE id = %d", $file_data->id);
+			}
+		}
+	}
 
   /************** uploading file *******************/
   /* creating directories */

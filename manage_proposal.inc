@@ -36,7 +36,7 @@ function _proposal_all()
     }
     if ($proposal_data->solution_status == 1) {
     	$proposal_status = 'Migrated';
-    	$proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id));
+    	$proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Reupload Solution', 'lab_migration/manage_proposal/solution/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id));
     } else {
     	$proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id));
     }
@@ -352,6 +352,11 @@ function proposal_edit_form($form_state)
 		}
 	}
 
+  $form['delete_proposal'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Delete Proposal')
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit')
@@ -373,6 +378,8 @@ function proposal_edit_form_validate($form, &$form_state)
 
 function proposal_edit_form_submit($form, &$form_state)
 {
+  $root_path = lab_migration_path();
+
   /* get current proposal */
   $proposal_id = arg(3);
   $result = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
@@ -380,6 +387,32 @@ function proposal_edit_form_submit($form, &$form_state)
     drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
     drupal_goto('lab_migration/manage_proposal');
     return;
+  }
+
+  if ($form_state['values']['delete_proposal'] == 1) {
+  	$files_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d", $proposal_id);
+  	while ($file_data = db_fetch_object($files_q)) {
+			if (!file_exists($root_path . $file_data->filepath)) {
+				drupal_set_message(t('Error deleting !file. File does not exists.', array('!file' => $file_data->filepath)), 'error');
+				return;
+			}
+			/* removing file */
+			if (!unlink($root_path . $file_data->filepath)) {
+				drupal_set_message(t('Error deleting !file', array('!file' => $file_data->filepath)), 'error');
+				return;
+			} else {
+				/* deleting example files database entries */
+				db_query("DELETE FROM {lab_migration_files} WHERE id = %d", $file_data->id);
+			}
+		}
+		if (!rmdir($root_path . $proposal_id . '/')) {
+			drupal_set_message(t('Error deleting !folder', array('!folder' => $root_path . $proposal_id . '/')), 'error');
+			return;
+		}
+		db_query("DELETE FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
+		drupal_set_message(t('Proposal Delete'), 'status');
+		drupal_goto('lab_migration/manage_proposal');
+		return;
   }
 
   db_query("UPDATE {lab_migration_proposal} SET name_title = '%s', name = '%s', contact_ph = '%s', department = '%s', university = '%s', lab_title = '%s', problem_topic = '%s' WHERE id = %d",
