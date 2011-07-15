@@ -140,8 +140,8 @@ function lab_migration_proposal_form_submit($form, &$form_state)
 
   /* inserting the user proposal */
   $result = db_query("INSERT INTO {lab_migration_proposal}
-    (uid, approver_uid, name_title, name, contact_ph, department, university, lab_title, problem_topic, approval_status, creation_date, approval_date) VALUES
-    (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d)",
+    (uid, approver_uid, solver_uid, name_title, name, contact_ph, department, university, lab_title, problem_topic, approval_status, solution_status, creation_date, approval_date, solution_date) VALUES
+    (%d, %d, 0, '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d, 0, %d, %d, 0)",
     $user->uid,
     0,
     $form_state['values']['name_title'],

@@ -34,7 +34,12 @@ function _proposal_all()
     case 2: $proposal_status = 'Dis-approved'; break;
     default: $proposal_status = 'Unknown'; break;
     }
-    $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id)); 
+    if ($proposal_data->solution_status == 1) {
+    	$proposal_status = 'Migrated';
+    	$proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id));
+    } else {
+    	$proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->department, $proposal_data->university, $proposal_data->lab_title, $proposal_status, l('Approve', 'lab_migration/manage_proposal/approve/' . $proposal_data->id) . ' | ' . l('Edit', 'lab_migration/manage_proposal/edit/' . $proposal_data->id));
+    }
   }
 
   /* check if there are any pending proposals */
@@ -62,6 +67,11 @@ function proposal_approval_form($form_state)
   $result = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
   if (!($row = db_fetch_object($result))) {
     drupal_set_message(t('Invalid proposal selected. Please try again.'), 'error');
+    drupal_goto('lab_migration/manage_proposal');
+    return;
+  }
+  if ($row->solution_status != 0) {
+    drupal_set_message(t('Cannot change approval status of solved approval.'), 'error');
     drupal_goto('lab_migration/manage_proposal');
     return;
   }
@@ -328,6 +338,18 @@ function proposal_edit_form($form_state)
 			'#value' => l($sup_file_data->filename, $dl_root_path . $sup_file_data->filepath),
 			'#title' => t('Supplementary file'),
 		);
+	}
+
+	if ($row->solution_status == 1) {
+		$sol_file_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'A'", $row->id);
+		$sol_file_data = db_fetch_object($sol_file_q);
+		if ($sol_file_data) {
+			$form['solution_file'] = array(
+				'#type' => 'item',
+				'#value' => l($sol_file_data->filename, $dl_root_path . $sol_file_data->filepath),
+				'#title' => t('Solution file'),
+			);
+		}
 	}
 
   $form['submit'] = array(

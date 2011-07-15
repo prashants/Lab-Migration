@@ -46,6 +46,16 @@ function lab_migration_menu()
     'weight' => 1,
     'file' => 'manage_proposal.inc',
   );
+  $items['lab_migration/manage_proposal/pending_solution'] = array(
+    'title' => 'Pending Solution',
+    'description' => 'Pending Lab Migration Solution',
+    'page callback' => '_proposal_pending_solution',
+    'access callback' => 'user_access',
+    'access arguments' => array('manage proposal'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+    'file' => 'solution.inc',
+  );
   $items['lab_migration/manage_proposal/all'] = array(
     'title' => 'All Proposals',
     'description' => 'All Proposals',
@@ -53,7 +63,7 @@ function lab_migration_menu()
     'access callback' => 'user_access',
     'access arguments' => array('manage proposal'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 2,
+    'weight' => 3,
     'file' => 'manage_proposal.inc',
   );
   $items['lab_migration/manage_proposal/approve'] = array(
@@ -73,6 +83,15 @@ function lab_migration_menu()
     'access arguments' => array('manage proposal'),
     'type' => MENU_CALLBACK,
     'file' => 'manage_proposal.inc',
+  );
+  $items['lab_migration/manage_proposal/solution'] = array(
+    'title' => 'Proposal Solution',
+    'description' => 'Proposal Solution',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('proposal_solution_form'),
+    'access arguments' => array('manage proposal'),
+    'type' => MENU_CALLBACK,
+    'file' => 'solution.inc',
   );
 
   /* for admin */
