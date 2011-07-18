@@ -206,6 +206,37 @@ Lab Migration Team
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
+    case 'solution_uploaded':
+      /* initializing data */
+      $dl_root_path = 'sites/default/files/lab_migration/';
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['solution_uploaded']['proposal_id']);
+      $proposal_data = db_fetch_object($proposal_q);
+      $sol_q = db_query("SELECT * FROM {lab_migration_files} WHERE link_id = %d AND filetype = 'A' LIMIT 1", $params['solution_uploaded']['proposal_id']);
+      $sol_data = db_fetch_object($sol_q);
+
+      $user_data = user_load($params['solution_uploaded']['user_id']);
+
+      $message['subject'] = t('[!site_name] Solution to your Lab migration has been completed', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['body'] = t('
+Dear !user_name,
+
+Solution to your Lab migration has been completed and is available on http://scilab.in/lab_migration/labs
+
+Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
+Email : ' . $user_data->mail . '
+Contact Phone No. : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
+University/Institute : ' .  $proposal_data->university . '
+Title of the Lab : ' . $proposal_data->lab_title . '
+Topic of the Problem : ' .  $proposal_data->problem_topic . '
+Solution : ' . 'http://scilab.in/' . $dl_root_path . $sol_data->filepath . '
+
+Best Wishes,
+
+Lab Migration Team
+!site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
+      break;
+
     case 'standard':
       $message['subject'] = $params['standard']['subject'];
       $message['body'] = $params['standard']['body'];

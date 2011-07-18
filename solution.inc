@@ -244,6 +244,18 @@ function proposal_solution_form_submit($form, &$form_state)
 		drupal_set_message('Error uploading file : ' . $dest_path . '/' . $filename, 'error');
 	}
 
+	/* sending email */
+	$user_data = user_load($row->uid);
+	$email_to = $user_data->mail;
+	$param['solution_uploaded']['proposal_id'] = $proposal_id;
+	$param['solution_uploaded']['user_id'] = $row->uid;
+	if (!drupal_mail('lab_migration', 'solution_uploaded', $email_to , language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
+		drupal_set_message('Error sending email message.', 'error');
+
+	$email_to = variable_get('textbook_companion_emails', '');;
+	if (!drupal_mail('lab_migration', 'solution_uploaded', $email_to , language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
+		drupal_set_message('Error sending email message.', 'error');
+
   drupal_goto('lab_migration/manage_proposal/pending_solution');
 }
 
