@@ -216,11 +216,13 @@ Lab Migration Team
 
       $user_data = user_load($params['solution_uploaded']['user_id']);
 
-      $message['subject'] = t('[!site_name] Solution to your Lab migration has been completed', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Solution of problem statement submitted by you', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Solution to your Lab migration has been completed and is available on http://scilab.in/lab_migration/labs
+We have uploaded the solutions of problem statement submitted by you, solution is available at following link.
+
+http://scilab.in/' . $dl_root_path . $sol_data->filepath . '
 
 Name of the Proposer : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
@@ -230,6 +232,8 @@ University/Institute : ' .  $proposal_data->university . '
 Title of the Lab : ' . $proposal_data->lab_title . '
 Topic of the Problem : ' .  $proposal_data->problem_topic . '
 Solution : ' . 'http://scilab.in/' . $dl_root_path . $sol_data->filepath . '
+
+Please feel free to contact us for any further clarifications.
 
 Best Wishes,
 
