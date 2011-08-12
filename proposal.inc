@@ -5,6 +5,11 @@ function lab_migration_proposal_form($form_state)
 {
   global $user;
 
+  if (!$user->uid) {
+		drupal_set_message('It is mandatory to login on this website to access the proposal form', 'error');
+		return;
+  }
+
   $form['#attributes'] = array('enctype' => "multipart/form-data");
 
   $form['name_title'] = array(
@@ -79,7 +84,7 @@ function lab_migration_proposal_form($form_state)
   );
   $form['supplementary_file'] = array(
 		'#type' => 'file',
-		'#title' => t('Upload supplementary files (eg. existing soultion of problem in any other software)'),
+		'#title' => t('Upload supplementary files (eg. existing solution of problem in any other software)'),
 		'#description' => t('If more than one file, then compress and upload as .zip or .tar file') . '<br />' .
 			t('Separate filenames with underscore. No spaces or any special characters allowed in filename.') . '<br />' .
 		t('Allowed file extensions : ') . variable_get('lab_migration_uploads_extensions', ''),
@@ -136,6 +141,12 @@ function lab_migration_proposal_form_validate($form, &$form_state)
 function lab_migration_proposal_form_submit($form, &$form_state)
 {
   global $user;
+
+  if (!$user->uid) {
+		drupal_set_message('It is mandatory to login on this website to access the proposal form', 'error');
+		return;
+  }
+
   $root_path = lab_migration_path();
 
   /* inserting the user proposal */
