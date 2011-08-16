@@ -36,13 +36,38 @@ function migrated_labs()
   }
 
   /* check if there are any pending proposals */
-  if (!$labs_rows) {
-    drupal_set_message(t('There are no lab migrations.'), 'status');
-    return '';
-  }
+  //if (!$labs_rows) {
+  //  drupal_set_message(t('There are no lab migrations.'), 'status');
+  //  return '';
+  //}
+
+  $output = "
+<p>
+	Labs Migration Project: Do you want to shift your labs from MATLAB&nbsp; to Scilab?<br />
+	<br />
+	Please get in touch with us at contact@scilab.in and we will help you.</p>
+<p>
+	Here are some previous labs that we have shifted from MATLAB to Scilab:</p>
+<h4>
+	Delhi University</h4>
+<ol>
+	<li>
+		<a href='http://scilab.in/files/labs_migration/experiments/Delhi_University/DU-Signals.pdf'>Signals and Systems</a></li>
+	<li>
+		<a href='http://scilab.in/files/labs_migration/experiments/Delhi_University/DU-Numerical-Methods.pdf'>Numerical Methods</a></li>
+</ol>
+<h4>
+	SASTRA University</h4>
+<ol>
+	<li>
+		Signal Processing</li>
+</ol>
+<p>
+	If you are a teacher <strong>and</strong> want access to the codes, please get in touch with us at contact@scilab.in from your official email ID.&nbsp;</p>
+  ";
 
   $labs_header = array('University/Institute', 'Title of the Lab', 'Title of the Problem', 'Name of the Proposer and Department', 'Status');
-  $output = theme_table($labs_header, $labs_rows);
+  $output .= theme_table($labs_header, $labs_rows);
   return $output; 
 }
 
