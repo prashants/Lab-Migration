@@ -7,7 +7,7 @@ function _proposal_pending_solution()
   $pending_rows = array();
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE approval_status = 1 AND solution_status = 0 ORDER BY id DESC");
   while ($pending_data = db_fetch_object($pending_q)) {
-    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name_title . ' ' . $pending_data->name, 'user/' . $pending_data->uid), $pending_data->department, $pending_data->university, $pending_data->lab_title, l('Upload Solution', '/lab_migration/manage_proposal/solution/' . $pending_data->id));
+    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name_title . ' ' . $pending_data->name, 'user/' . $pending_data->uid), $pending_data->department, $pending_data->university, $pending_data->lab_title, l('Upload Solution', 'lab_migration/manage_proposal/solution/' . $pending_data->id));
   }
 
   /* check if there are any pending proposals */
