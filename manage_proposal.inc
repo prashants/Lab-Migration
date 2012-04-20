@@ -101,10 +101,10 @@ function _category_all()
     case 13: $category_data = 'Others'; break;
     default: $category_data = 'Unknown'; break;
   	}
-    $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->lab_title, $proposal_data->department, $category_data, l('Edit', 'lab_migration/manage_proposal/category/edit/' . $proposal_data->id));
+    $proposal_rows[] = array(date('d-m-Y', $proposal_data->creation_date), l($proposal_data->name, 'user/' . $proposal_data->uid), $proposal_data->lab_title, $proposal_data->department, $category_data, l('Edit Category', 'lab_migration/manage_proposal/category/edit/' . $proposal_data->id));
   }
 
-  $proposal_header = array('Date of Submission', 'Name', 'Title of the Lab', 'Department', 'Category', 'Status');
+  $proposal_header = array('Date of Submission', 'Name', 'Title of the Lab', 'Department', 'Category', 'Action');
   $output = theme_table($proposal_header, $proposal_rows);
   return $output;
 }
@@ -182,16 +182,10 @@ function proposal_approval_form($form_state)
       '#title' => t('Experiments'),
   );
 
-  $form['experiment'] = array(
-      '#type' => 'item',
-      '#value' => $experiment_list,
-      '#title' => t('Experiments'),
-  );
-
-  if ($proposal_data->solution_provider_uid == -1) {
+  if ($proposal_data->solution_provider_uid == 0) {
   	$solution_provider = "User will not provide solution, we will have to provide solution";
   } else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
-  	$solution_provider = "User will provide solution";
+  	$solution_provider = "Proposer will provide the solution of the lab";
   } else {
   	$solution_provider_user_data = user_load($proposal_data->solution_provider_uid);
   	if ($solution_provider_user_data)
@@ -209,13 +203,6 @@ function proposal_approval_form($form_state)
 	  '#type' => 'item',
 		'#title' => t('Do you want to display the solution on the www.scilab.in website'),
 		'#value' => ($proposal_data->solution_display == 1) ? "Yes" : "No",
-		//'#value' => $proposal_data->solution_display,
-  );
-
-  $form['experiment'] = array(
-      '#type' => 'item',
-      '#value' => $experiment_list,
-      '#title' => t('Experiments'),
   );
 
   $form['approval'] = array(
@@ -377,6 +364,29 @@ function proposal_status_form($form_state)
       '#type' => 'item',
       '#value' => $experiment_list,
       '#title' => t('Experiments'),
+  );
+
+  if ($proposal_data->solution_provider_uid == 0) {
+  	$solution_provider = "User will not provide solution, we will have to provide solution";
+  } else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
+  	$solution_provider = "Proposer will provide the solution of the lab";
+  } else {
+  	$solution_provider_user_data = user_load($proposal_data->solution_provider_uid);
+  	if ($solution_provider_user_data)
+  		$solution_provider = "Solution will be provided by user " . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid);
+  	else
+  		$solution_provider = "User does not exists";
+  }
+  $form['solution_provider_uid'] = array(
+	  '#type' => 'item',
+		'#title' => t('Who will provide the solution'),
+		'#value' => $solution_provider,
+  );
+
+  $form['solution_display'] = array(
+	  '#type' => 'item',
+		'#title' => t('Display the solution on the www.scilab.in website'),
+		'#value' => ($proposal_data->solution_display == 1) ? "Yes" : "No",
   );
 
   $proposal_status = '';
@@ -602,6 +612,32 @@ function proposal_edit_form($form_state)
 		}
 	}
 
+	if ($proposal_data->solution_provider_uid == 0)
+		$solution_provider_user = 1;
+	else if ($proposal_data->solution_provider_uid == $proposal_data->uid)
+		$solution_provider_user = 2;
+	else
+		$solution_provider_user = 3;
+  $form['solution_provider_uid'] = array(
+	  '#type' => 'radios',
+		'#title' => t('Who will provide the solution'),
+		'#options' => array('1' => 'Open', '2' => 'Proposer', '3' => 'User id mentioned below'),
+		'#required' => TRUE,
+		'#default_value' => $solution_provider_user,
+  );
+  $form['solution_provider_user_id'] = array(
+	  '#type' => 'textfield',
+		'#default_value' => ($solution_provider_user == 3) ? $proposal_data->solution_provider_uid : "",
+  );
+
+  $form['solution_display'] = array(
+	  '#type' => 'radios',
+		'#title' => t('Do you want to display the solution on the www.scilab.in website'),
+		'#options' => array('1' => 'Yes', '2' => 'No'),
+		'#required' => TRUE,
+		'#default_value' => ($proposal_data->solution_display == 1) ? "1" : "2",
+  );
+
   $form['delete_proposal'] = array(
     '#type' => 'checkbox',
     '#title' => t('Delete Proposal')
@@ -616,6 +652,15 @@ function proposal_edit_form($form_state)
     '#value' => l(t('Cancel'), 'lab_migration/manage_proposal'),
   );
   return $form;
+}
+
+function proposal_edit_form_validate($form, &$form_state)
+{
+  if ($form_state['values']['solution_provider_uid'] == 3) {
+  	if (!(user_load((int)$form_state['values']['solution_provider_user_id']))) {
+  		form_set_error('solution_provider_user_id', t('Solution provider user id does not exists'));
+  	}
+  }
 }
 
 function proposal_edit_form_submit($form, &$form_state)
@@ -650,14 +695,32 @@ function proposal_edit_form_submit($form, &$form_state)
 		return;
   }
 
+  $solution_provider_uid = 0;
+  if ($form_state['values']['solution_provider_uid'] == 1) {
+  	$solution_provider_uid = 0;
+  } else if ($form_state['values']['solution_provider_uid'] == 2) {
+  	$solution_provider_uid = $proposal_data->uid;
+  } else if ($form_state['values']['solution_provider_uid'] == 3) {
+  	$solution_provider_uid = (int)$form_state['values']['solution_provider_user_id'];
+  }
+
+  $solution_display = 0;
+  if ($form_state['values']['solution_display'] == 1) {
+  	$solution_display = 1;
+  } else {
+  	$solution_display = 0;
+  }
+
   /* update proposal */
-  $result = db_query("UPDATE {lab_migration_proposal} SET name_title = '%s', name = '%s', contact_ph = '%s', department = '%s', university = '%s', lab_title = '%s' WHERE id = %d",
+  $result = db_query("UPDATE {lab_migration_proposal} SET name_title = '%s', name = '%s', contact_ph = '%s', department = '%s', university = '%s', lab_title = '%s', solution_provider_uid = %d, solution_display = %d WHERE id = %d",
     $form_state['values']['name_title'],
     $form_state['values']['name'],
     $form_state['values']['contact_ph'],
     $form_state['values']['department'],
     $form_state['values']['university'],
     $form_state['values']['lab_title'],
+    $solution_provider_uid,
+    $solution_display,
     $proposal_id);
   if (!$result)
   {
