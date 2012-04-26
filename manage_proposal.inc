@@ -612,22 +612,28 @@ function proposal_edit_form($form_state)
 		}
 	}
 
-	if ($proposal_data->solution_provider_uid == 0)
+	if ($proposal_data->solution_provider_uid == 0) {
 		$solution_provider_user = 1;
-	else if ($proposal_data->solution_provider_uid == $proposal_data->uid)
+	} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
 		$solution_provider_user = 2;
-	else
+	} else {
 		$solution_provider_user = 3;
+		$user_data = user_load($proposal_data->solution_provider_uid);
+		if (!$user_data) {
+			$solution_provider_user = 1;
+			drupal_set_message('Solution provider user name is invalid', 'error');
+		}
+	}
   $form['solution_provider_uid'] = array(
 	  '#type' => 'radios',
 		'#title' => t('Who will provide the solution'),
-		'#options' => array('1' => 'Open', '2' => 'Proposer', '3' => 'User id mentioned below'),
+		'#options' => array('1' => 'Open', '2' => 'Proposer', '3' => 'User name mentioned below'),
 		'#required' => TRUE,
 		'#default_value' => $solution_provider_user,
   );
-  $form['solution_provider_user_id'] = array(
+  $form['solution_provider_user_name'] = array(
 	  '#type' => 'textfield',
-		'#default_value' => ($solution_provider_user == 3) ? $proposal_data->solution_provider_uid : "",
+		'#default_value' => ($solution_provider_user == 3) ? $user_data->name : "",
   );
 
   $form['solution_display'] = array(
@@ -657,8 +663,8 @@ function proposal_edit_form($form_state)
 function proposal_edit_form_validate($form, &$form_state)
 {
   if ($form_state['values']['solution_provider_uid'] == 3) {
-  	if (!(user_load((int)$form_state['values']['solution_provider_user_id']))) {
-  		form_set_error('solution_provider_user_id', t('Solution provider user id does not exists'));
+  	if (!user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])))) {
+  		form_set_error('solution_provider_user_name', t('Solution provider user name does not exists'));
   	}
   }
 }
@@ -701,7 +707,8 @@ function proposal_edit_form_submit($form, &$form_state)
   } else if ($form_state['values']['solution_provider_uid'] == 2) {
   	$solution_provider_uid = $proposal_data->uid;
   } else if ($form_state['values']['solution_provider_uid'] == 3) {
-  	$solution_provider_uid = (int)$form_state['values']['solution_provider_user_id'];
+  	$user_data = user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])));
+  	$solution_provider_uid = (int)$user_data->uid;
   }
 
   $solution_display = 0;
@@ -742,12 +749,21 @@ function proposal_edit_form_submit($form, &$form_state)
 	}
 
   /* inserting new experiments */
+  $number_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number DESC LIMIT 1", $proposal_id);
+  if ($number_data = db_fetch_object($number_q)) {
+  	$number = (int)$number_data->number;
+  	$number++;
+  } else {
+  	$number = 1;
+  }
   foreach ($form_state['values']['lab_experiment']['insert'] as $insert_id => $insert_value) {
   	if (strlen(trim($insert_value)) >= 1) {
-  		$result = db_query("INSERT INTO {lab_migration_experiment} (proposal_id, title) VALUES (%d, '%s')", $proposal_id, trim($insert_value));
+  		$result = db_query("INSERT INTO {lab_migration_experiment} (proposal_id, number, title) VALUES (%d, %d, '%s')", $proposal_id, $number, trim($insert_value));
 			if (!$result)
 			{
 				drupal_set_message(t('Could not insert Title of the Experiment : ') . trim($insert_value), 'error');
+			} else {
+				$number++;
 			}
 		}
 	}
