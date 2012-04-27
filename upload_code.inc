@@ -5,40 +5,10 @@ function list_experiments()
 {
   global $user;
 
-  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE uid = %d ORDER BY id DESC LIMIT 1", $user->uid);
-  $proposal_data = db_fetch_object($proposal_q);
-  if (!$proposal_data)
-  {
-    drupal_set_message("Please submit a " . l('proposal', 'lab_migration/proposal') . ".", 'error');
-    drupal_goto('');
-  }
-  if ($proposal_data->proposal_status  != 1)
-  {
-    switch ($proposal_data->approval_status )
-    {
-    case 0:
-      drupal_set_message(t('We have already received your proposal. We will get back to you soon.'), 'status');
+  $proposal_data = get_proposal();
+  if (!$proposal_data) {
       drupal_goto('');
       return;
-      break;
-    case 1:
-    	break;
-    case 2:
-      drupal_set_message(t('Your proposal has been dis-approved. Please create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'error');
-      drupal_goto('');
-      return;
-      break;
-    case 3:
-      drupal_set_message(t('Congratulations! You have completed your last book proposal. You have to create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'status');
-      drupal_goto('');
-      return;
-      break;
-    default:
-       drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
-       drupal_goto('');
-       return;
-       break;
-    }
   }
 
   $return_html = '<br />';
@@ -83,46 +53,16 @@ function upload_code_form($form_state)
 {
   global $user;
 
-  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE uid = %d ORDER BY id DESC LIMIT 1", $user->uid);
-  $proposal_data = db_fetch_object($proposal_q);
-  if (!$proposal_data)
-  {
-    drupal_set_message("Please submit a " . l('proposal', 'lab_migration/proposal') . ".", 'error');
-    drupal_goto('');
-  }
-  if ($proposal_data->proposal_status != 1)
-  {
-    switch ($proposal_data->approval_status )
-    {
-    case 0:
-      drupal_set_message(t('We have already received your proposal. We will get back to you soon.'), 'status');
+  $proposal_data = get_proposal();
+  if (!$proposal_data) {
       drupal_goto('');
       return;
-      break;
-    case 1:
-    	break;
-    case 2:
-      drupal_set_message(t('Your proposal has been dis-approved. Please create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'error');
-      drupal_goto('');
-      return;
-      break;
-    case 3:
-      drupal_set_message(t('Congratulations! You have completed your last book proposal. You have to create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'status');
-      drupal_goto('');
-      return;
-      break;
-    default:
-       drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
-       drupal_goto('');
-       return;
-       break;
-    }
   }
 
   /* add javascript for automatic book title, check if example uploaded, dependency selection effects */
   $dep_selection_js = " $(document).ready(function() {
     $('#edit-existing-depfile-dep-lab-title').change(function() {
-      var dep_selected = '';
+      var dep_selected = ''; 
       /* showing and hiding relevant files */
       $('.form-checkboxes .option').hide();
       $('.form-checkboxes .option').each(function(index) {
@@ -139,9 +79,9 @@ function upload_code_form($form_state)
     });
 
     $('.form-checkboxes .option').change(function() {
-      $('#edit-existing-depfile-dep-book-title').trigger('change');
+      $('#edit-existing-depfile-dep-lab-title').trigger('change');
     });
-    $('#edit-existing-depfile-dep-book-title').trigger('change');
+    $('#edit-existing-depfile-dep-lab-title').trigger('change');
   });";
   drupal_add_js($dep_selection_js, 'inline', 'header');
 
@@ -370,12 +310,12 @@ function upload_code_form_validate($form, &$form_state)
 
   /* add javascript again for automatic book title, check if example uploaded, dependency selection effects */
   $dep_selection_js = " $(document).ready(function() {
-    $('#edit-existing-depfile-dep-lab-title-wrapper').change(function() {
+    $('#edit-existing-depfile-dep-lab-title').change(function() {
       var dep_selected = ''; 
       /* showing and hiding relevant files */
       $('.form-checkboxes .option').hide();
       $('.form-checkboxes .option').each(function(index) {
-        var activeClass = $('#edit-existing-depfile-dep-book-title').val();
+        var activeClass = $('#edit-existing-depfile-dep-lab-title').val();
         if ($(this).children().hasClass(activeClass)) {
           $(this).show();
         }
@@ -388,9 +328,9 @@ function upload_code_form_validate($form, &$form_state)
     });
 
     $('.form-checkboxes .option').change(function() {
-      $('#edit-existing-depfile-dep-book-title').trigger('change');
+      $('#edit-existing-depfile-dep-lab-title').trigger('change');
     });
-    $('#edit-existing-depfile-dep-book-title').trigger('change');
+    $('#edit-existing-depfile-dep-lab-title').trigger('change');
   });";
   drupal_add_js($dep_selection_js, 'inline', 'header');
 }
@@ -400,42 +340,12 @@ function upload_code_form_submit($form, &$form_state) {
 
   $root_path = lab_migration_path();
 
-  /************************ check proposal details ************************/
-  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE uid = %d ORDER BY id DESC LIMIT 1", $user->uid);
-  $proposal_data = db_fetch_object($proposal_q);
-  if (!$proposal_data)
-  {
-    drupal_set_message("Please submit a " . l('proposal', 'lab_migration/proposal') . ".", 'error');
-    drupal_goto('');
+  $proposal_data = get_proposal();
+  if (!$proposal_data) {
+      drupal_goto('');
+      return;
   }
-  if ($proposal_data->proposal_status != 1)
-  {
-    switch ($proposal_data->approval_status )
-    {
-    case 0:
-      drupal_set_message(t('We have already received your proposal. We will get back to you soon.'), 'status');
-      drupal_goto('');
-      return;
-      break;
-    case 1:
-    	break;
-    case 2:
-      drupal_set_message(t('Your proposal has been dis-approved. Please create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'error');
-      drupal_goto('');
-      return;
-      break;
-    case 3:
-      drupal_set_message(t('Congratulations! You have completed your last book proposal. You have to create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'status');
-      drupal_goto('');
-      return;
-      break;
-    default:
-       drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
-       drupal_goto('');
-       return;
-       break;
-    }
-  }
+
   $proposal_id = $proposal_data->id;
 
   /************************ check experiment details ************************/
@@ -579,18 +489,18 @@ function _list_of_lab_titles()
 
 function _list_of_dependency_files()
 {
-  $book_dependency_files = array();
-  $book_dependency_files_class = array();
-  $book_dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} ORDER BY filename ASC");
+  $dependency_files = array();
+  $dependency_files_class = array();
+  $dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} ORDER BY filename ASC");
 
-  while ($book_dependency_files_data = db_fetch_object($book_dependency_files_q))
+  while ($dependency_files_data = db_fetch_object($dependency_files_q))
   {
     $temp_caption = '';
-    if ($book_dependency_files_data->caption)
-      $temp_caption .= ' (' . $book_dependency_files_data->caption . ')';
-    $book_dependency_files[$book_dependency_files_data->id] = l($book_dependency_files_data->filename . $temp_caption, 'download/dependency/' . $book_dependency_files_data->id);
-    $book_dependency_files_class[$book_dependency_files_data->id] = $book_dependency_files_data->preference_id;
+    if ($dependency_files_data->caption)
+      $temp_caption .= ' (' . $dependency_files_data->caption . ')';
+    $dependency_files[$dependency_files_data->id] = l($dependency_files_data->filename . $temp_caption, 'download/dependency/' . $dependency_files_data->id);
+    $dependency_files_class[$dependency_files_data->id] = $dependency_files_data->proposal_id;
   }
-  return array($book_dependency_files, $book_dependency_files_class);
+  return array($dependency_files, $dependency_files_class);
 }
 

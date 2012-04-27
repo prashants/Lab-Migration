@@ -1047,6 +1047,7 @@ function lab_migration_ajax()
 }
 
 /*************************** VALIDATION FUNCTIONS *****************************/
+
 function lab_migration_check_valid_filename($file_name) {
   if (!preg_match('/^[0-9a-zA-Z\_\.]+$/', $file_name))
     return FALSE;
@@ -1071,12 +1072,43 @@ function check_code_number($number = '') {
     return TRUE;
 }
 
-function lab_migration_upload_path() {
+function lab_migration_path() {
   return $_SERVER['DOCUMENT_ROOT'] . base_path() . 'lab_migration/uploads/';
 }
 
-function lab_migration_path() {
-  return $_SERVER['DOCUMENT_ROOT'] . base_path() . 'lab_migration/uploads/';
+/************************* USER VERIFICATION FUNCTIONS ************************/
+
+function get_proposal() {
+	global $user;
+
+  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE uid = %d ORDER BY id DESC LIMIT 1", $user->uid);
+  $proposal_data = db_fetch_object($proposal_q);
+  if (!$proposal_data)
+  {
+    drupal_set_message("Please submit a " . l('proposal', 'lab_migration/proposal') . ".", 'error');
+    drupal_goto('');
+  }
+  if ($proposal_data->proposal_status != 1)
+  {
+    switch ($proposal_data->approval_status)
+    {
+    case 0:
+      drupal_set_message(t('We have already received your proposal. We will get back to you soon.'), 'status');
+      return FALSE;
+    case 1:
+      return $proposal_data;
+    case 2:
+      drupal_set_message(t('Your proposal has been dis-approved. Please create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'error');
+      return FALSE;
+    case 3:
+      drupal_set_message(t('Congratulations! You have completed your last book proposal. You have to create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'status');
+      return FALSE;
+    default:
+       drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
+       return FALSE;
+    }
+  }
+  return FALSE;
 }
 
 /****************************** DELETION FUNCTIONS ****************************/
