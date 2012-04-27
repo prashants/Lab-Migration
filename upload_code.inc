@@ -21,7 +21,7 @@ function list_experiments()
   $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number ASC", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
   {
-    $experiment_rows[] = array($experiment_data->number, $experiment_data->title, '', '');
+    $experiment_rows[] = array($experiment_data->number, $experiment_data->title, '', '', '');
     /* get solution list */
     $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d ORDER BY id ASC", $experiment_data->id);
     if ($solution_q) {
@@ -32,19 +32,34 @@ function list_experiments()
     		case 1: $solution_status = "Approved"; break;
     		default: $solution_status = "Unknown"; break;
     		}
-    		$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
+    		$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
     		/* get solution files */
     		$solution_files_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d ORDER BY id ASC", $solution_data->id);
     		if ($solution_files_q) {
     			while ($solution_files_data = db_fetch_object($solution_files_q)) {
-    				$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_files_data->filename, '', '');
+    				$code_file_type = '';
+    				switch ($solution_files_data->filetype) {
+    				case 'S': $code_file_type = 'Source'; break;
+    				case 'R': $code_file_type = 'Result'; break;
+    				case 'X': $code_file_type = 'Xcox'; break;
+    				case 'U': $code_file_type = 'Unknown'; break;
+    				default: $code_file_type = 'Unknown'; break;
+    				}
+    				$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_files_data->filename, $code_file_type, '', '');
+    			}
+    		}
+    		/* get dependencies files */
+    		$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE proposal_id = %d ORDER BY id ASC", $proposal_data->id);
+    		if ($dependency_files_q) {
+    			while ($dependency_files_data = db_fetch_object($dependency_files_q)) {
+    				$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $dependency_files_data->filename, 'Dependency', '', '');
     			}
     		}
     	}
     }
   }
 
-  $experiment_header = array('Exp. Number', 'Title of the Experiment', 'Status', 'Actions');
+  $experiment_header = array('Exp. Number', 'Title of the Experiment', 'Type', 'Status', 'Actions');
   $return_html .= theme_table($experiment_header, $experiment_rows);
   return $return_html;
 }
