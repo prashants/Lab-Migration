@@ -20,7 +20,7 @@ function lab_migration_menu()
     'file' => 'proposal.inc',
   );
   
-  /* for reviewers */
+  /* PROPOSAL */
   $items['lab_migration/manage_proposal'] = array(
     'title' => 'Manage Lab Migration',
     'description' => 'Manage Lab Migration Proposals',
@@ -106,7 +106,57 @@ function lab_migration_menu()
     'file' => 'manage_proposal.inc',
   );
 
-  /* for admin */
+  /* CODE REVIEW */
+  $items['lab_migration/code_approval'] = array(
+    'title' => 'Manage Code Approval',
+    'description' => 'Manage Code Approval',
+    'page callback' => 'code_approval',
+    'access arguments' => array('approve code'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'code_approval.inc',
+  );
+  $items['lab_migration/code_approval/approve'] = array(
+    'title' => 'Code Approval',
+    'description' => 'Code Approval',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('code_approval_form'),
+    'access arguments' => array('approve code'),
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 1,
+    'file' => 'code_approval.inc',
+  );
+  $items['lab_migration/code_approval/bulk'] = array(
+    'title' => 'Bulk Manage',
+    'description' => 'Bulk Mangage',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('bulk_approval_form'),
+    'access arguments' => array('bulk manage code'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+    'file' => 'code_approval.inc',
+  );
+  $items['lab_migration/code_approval/editcode'] = array(
+    'title' => 'Admin Edit Example',
+    'description' => 'Admin Edit Example',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('upload_examples_admin_edit_form'),
+    'access arguments' => array('approve code'),
+    'type' => MENU_CALLBACK,
+    'weight' => 3,
+    'file' => 'editcodeadmin.inc',
+  );
+  $items['lab_migration/code_approval/notes'] = array(
+    'title' => 'Notes for Reviewers',
+    'description' => 'Notes for Reviewers',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lab_notes_form'),
+    'access arguments' => array('bulk manage code'),
+    'type' => MENU_CALLBACK,
+    'weight' => 4,
+    'file' => 'notes.inc',
+  );
+
+  /* ADMIN SETTINGS */
   $items['admin/settings/lab_migration'] = array(
     'title' => 'Lab Migration Settings',
     'description' => 'Lab Migration Settings', 
@@ -138,7 +188,6 @@ function lab_migration_menu()
   $items['lab_migration/code/upload'] = array(
     'title' => 'Code Submission',
     'description' => 'Code Submission',
-    //'page callback' => 'upload_examples',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('upload_code_form'),
     'access arguments' => array('upload code'),
