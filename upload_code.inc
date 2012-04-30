@@ -32,7 +32,10 @@ function list_experiments()
     		case 1: $solution_status = "Approved"; break;
     		default: $solution_status = "Unknown"; break;
     		}
-    		$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
+    		if ($solution_data->approval_status == 0)
+    			$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
+    		else
+    			$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, '');
     		/* get solution files */
     		$solution_files_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d ORDER BY id ASC", $solution_data->id);
     		if ($solution_files_q) {

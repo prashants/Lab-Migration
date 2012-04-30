@@ -20,6 +20,7 @@
   lab_migration_solution : approval_status
   	0 - Pending
   	1 - Approved
+  	2 - Disapproved (delete it)
 */
 
 function lab_migration_proposal_form($form_state)
