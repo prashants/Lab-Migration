@@ -133,7 +133,7 @@ function lab_migration_menu()
     'access arguments' => array('bulk manage code'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
-    'file' => 'code_approval.inc',
+    'file' => 'bulk_approval.inc',
   );
   $items['lab_migration/code_approval/editcode'] = array(
     'title' => 'Admin Edit Example',
