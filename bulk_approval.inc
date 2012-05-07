@@ -11,33 +11,33 @@ function bulk_approval_form($form_state)
   ahah_helper_register($form, $form_state);
 
   /* default value for ahah fields */
-  if (!isset($form_state['storage']['run']['book']))
+  if (!isset($form_state['storage']['run']['lab']))
   {
     $lab_default_value = 0;
   } else {
-    $lab_default_value =  $form_state['storage']['run']['book'];
+    $lab_default_value =  $form_state['storage']['run']['lab'];
   }
 
-  if (!isset($form_state['storage']['run']['chapter']))
+  if (!isset($form_state['storage']['run']['experiment']))
   {
-    $chapter_default_value = 0;
+    $experiment_default_value = 0;
   } else {
-    if ($form_state['values']['run']['book_hidden'] !=  $form_state['values']['run']['book'])
-      $chapter_default_value = 0;
+    if ($form_state['values']['run']['lab_hidden'] !=  $form_state['values']['run']['lab'])
+      $experiment_default_value = 0;
     else
-      $chapter_default_value = $form_state['storage']['run']['chapter'];
+      $experiment_default_value = $form_state['storage']['run']['experiment'];
   }
 
-  if (!isset($form_state['storage']['run']['example']))
+  if (!isset($form_state['storage']['run']['solution']))
   {
-    $example_default_value = 0;
+    $solution_default_value = 0;
   } else {
-    if ($form_state['values']['run']['book_hidden'] !=  $form_state['values']['run']['book'])
-      $example_default_value = 0;
-    else if ($form_state['values']['run']['chapter_hidden'] !=  $form_state['values']['run']['chapter'])
-      $example_default_value = 0;
+    if ($form_state['values']['run']['lab_hidden'] !=  $form_state['values']['run']['lab'])
+      $solution_default_value = 0;
+    else if ($form_state['values']['run']['experiment_hidden'] !=  $form_state['values']['run']['experiment'])
+      $solution_default_value = 0;
     else
-      $example_default_value = $form_state['storage']['run']['example'];
+      $solution_default_value = $form_state['storage']['run']['solution'];
   }
 
   $form['run'] = array(
@@ -50,7 +50,7 @@ function bulk_approval_form($form_state)
     '#tree' => TRUE,
   );
 
-  $form['run']['book'] = array(
+  $form['run']['lab'] = array(
       '#type' => 'select',
       '#title' => t('Title of the Lab'),
       '#options' => _list_of_labs(),
@@ -69,62 +69,62 @@ function bulk_approval_form($form_state)
   );
 
   /* hidden form elements */
-  $form['run']['book_hidden'] = array(
+  $form['run']['lab_hidden'] = array(
     '#type'  => 'hidden',
-    '#value' =>  $form_state['values']['run']['book'],
+    '#value' =>  $form_state['values']['run']['lab'],
   );
 
   /* hidden form elements */
-  $form['run']['chapter_hidden'] = array(
+  $form['run']['experiment_hidden'] = array(
     '#type'  => 'hidden',
-    '#value' =>  $form_state['values']['run']['chapter'],
+    '#value' =>  $form_state['values']['run']['experiment'],
   );
 
   if ($lab_default_value > 0)
   {
-    $form['run']['download_book'] = array(
+    $form['run']['download_lab'] = array(
       '#type' => 'item',
-      '#value' => l('Download', 'full_download/book/' . $lab_default_value) . ' ' . t('(Download all the approved and unapproved examples of the entire book)'),
+      '#value' => l('Download', 'lab_migration/full_download/lab/' . $lab_default_value) . ' ' . t('(Download all the approved and unapproved solutions of the entire lab)'),
     );
     $form['run']['download_pdf'] = array(
       '#type' => 'item',
-      '#value' => l('Download PDF', 'lab_migration/generate_book/' . $lab_default_value . '/1') . ' ' . t('(Download PDF of all the approved and unapproved examples of the entire book)'),
+      '#value' => l('Download PDF', 'lab_migration/generate_lab/' . $lab_default_value . '/1') . ' ' . t('(Download PDF of all the approved and unapproved solution of the entire lab)'),
     );
-    $form['run']['regenrate_book'] = array(
+    $form['run']['regenrate_lab'] = array(
       '#type' => 'item',
-      '#value' => l('Regenerate PDF', 'lab_migration/delete_book/' . $lab_default_value) . ' ' . t('(Manually Regenerate PDF of the entire book)'),
+      '#value' => l('Regenerate PDF', 'lab_migration/delete_lab/' . $lab_default_value) . ' ' . t('(Manually Regenerate PDF of the entire lab)'),
     );
-    $form['run']['notes_book'] = array(
+    $form['run']['notes_lab'] = array(
       '#type' => 'item',
-      '#value' => l('Notes for Reviewers', 'code_approval/notes/' . $lab_default_value),
+      '#value' => l('Notes for Reviewers', '/lab_migration/code_approval/notes/' . $lab_default_value),
     );
 
-    $form['run']['approve_book'] = array(
+    $form['run']['approve_lab'] = array(
       '#type'  => 'checkbox',
-      '#title' => t('Approve Entire Book'),
+      '#title' => t('Approve Entire Lab'),
     );
-    $form['run']['unapprove_book'] = array(
+    $form['run']['unapprove_lab'] = array(
       '#type'  => 'checkbox',
-      '#title' => t('Pending Review Entire Book'),
+      '#title' => t('Pending Review Entire Lab'),
     );
-    $form['run']['disapprove_book'] = array(
+    $form['run']['disapprove_lab'] = array(
       '#type'  => 'checkbox',
-      '#title' => t('Dis-Approve Entire Book (This will delete all the examples in the book)'),
+      '#title' => t('Dis-Approve Entire Lab (This will delete all the solutions in the lab)'),
       '#prefix' => '<div style="color:red;"><strong>',
       '#suffix' => '</strong></div>',
     );
-    $form['run']['delete_book_including_proposal'] = array(
+    $form['run']['delete_lab_including_proposal'] = array(
       '#type'  => 'checkbox',
-      '#title' => t('Delete Entire Book Including Proposal'),
+      '#title' => t('Delete Entire Lab Including Proposal'),
       '#prefix' => '<div style="color:red;"><strong>',
       '#suffix' => '</strong></div>',
     );
 
-    $form['run']['chapter'] = array(
+    $form['run']['experiment'] = array(
       '#type' => 'select',
-      '#title' => t('Title of the Chapter'),
+      '#title' => t('Title of the Experiment'),
       '#options' => _list_of_experiments($lab_default_value),
-      '#default_value' => $chapter_default_value,
+      '#default_value' => $experiment_default_value,
       '#tree' => TRUE,
       '#ahah' => array(
         'event'   => 'change',
@@ -137,33 +137,33 @@ function bulk_approval_form($form_state)
         ),
       ),
     );
-    if ($chapter_default_value > 0)
+    if ($experiment_default_value > 0)
     {
-      $form['run']['download_chapter'] = array(
+      $form['run']['download_experiment'] = array(
         '#type' => 'item',
-        '#value' => l('Download', 'full_download/chapter/' . $chapter_default_value) . ' ' . t('(Download all the approved and unapproved examples of the entire chapter)'),
+        '#value' => l('Download', 'lab_migration/full_download/experiment/' . $experiment_default_value) . ' ' . t('(Download all the approved and unapproved solutions of the experiment)'),
       );
 
-      $form['run']['approve_chapter'] = array(
+      $form['run']['approve_experiment'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Approve Entire Chapter'),
+        '#title' => t('Approve Entire Experiment'),
       );
-      $form['run']['unapprove_chapter'] = array(
+      $form['run']['unapprove_experiment'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Pending Review Entire Chapter'),
+        '#title' => t('Pending Review Entire Experiment'),
       );
-      $form['run']['disapprove_chapter'] = array(
+      $form['run']['disapprove_experiment'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Dis-Approve Entire Chapter (This will delete all the examples in the chapter)'),
+        '#title' => t('Dis-Approve Entire Experiment (This will delete all the solutions in the experiment)'),
         '#prefix' => '<div style="color:red;"><strong>',
         '#suffix' => '</strong></div>',
       );
 
-      $form['run']['example'] = array(
+      $form['run']['solution'] = array(
         '#type' => 'select',
-        '#title' => t('Example No. (Caption)'),
-        '#options' => _list_of_solutions($chapter_default_value),
-        '#default_value' => $example_default_value,
+        '#title' => t('Solution No. (Caption)'),
+        '#options' => _list_of_solutions($experiment_default_value),
+        '#default_value' => $solution_default_value,
         '#tree' => TRUE,
         '#ahah' => array(
           'event'   => 'change',
@@ -182,69 +182,69 @@ function bulk_approval_form($form_state)
   /************ START OF $_POST **************/
   if ($_POST)
   {
-    if (($lab_default_value > 0) && ($chapter_default_value > 0) && ($example_default_value > 0))
+    if (($lab_default_value > 0) && ($experiment_default_value > 0) && ($solution_default_value > 0))
     {
-      $example_list_q = db_query("SELECT * FROM {lab_migration_example_files} WHERE example_id = %d", $form_state['values']['run']['example']);
-      if ($example_list_q)
+      $solution_list_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d", $form_state['values']['run']['solution']);
+      if ($solution_list_q)
       {
-        $example_files_rows = array();
-        while ($example_list_data = db_fetch_object($example_list_q))
+        $solution_files_rows = array();
+        while ($solution_list_data = db_fetch_object($solution_list_q))
         {
-          $example_file_type = '';
-          switch ($example_list_data->filetype)
+          $solution_file_type = '';
+          switch ($solution_list_data->filetype)
           {
-          case 'S' : $example_file_type = 'Source or Main file'; break;
-          case 'R' : $example_file_type = 'Result file'; break;
-          case 'X' : $example_file_type = 'xcos file'; break;
-          default  : $example_file_type = 'Unknown'; break;
+          case 'S' : $solution_file_type = 'Source or Main file'; break;
+          case 'R' : $solution_file_type = 'Result file'; break;
+          case 'X' : $solution_file_type = 'xcos file'; break;
+          default  : $solution_file_type = 'Unknown'; break;
           }
-          $example_files_rows[] = array(l($example_list_data->filename, 'download/file/' . $example_list_data->id), $example_file_type);
+          $solution_files_rows[] = array(l($solution_list_data->filename, 'lab_migration/download/file/' . $solution_list_data->id), $solution_file_type);
         }
 
         /* dependency files */
         $dependency_list_q = db_query("SELECT dependency.id as dependency_id, dependency.filename as dependency_filename, dependency.caption as dependency_caption
-          FROM {lab_migration_example_dependency} example_dependency LEFT JOIN {lab_migration_dependency_files} dependency
-          ON example_dependency.dependency_id = dependency.id
-          WHERE example_dependency.example_id = %d", $form_state['values']['run']['example']);
+          FROM {lab_migration_solution_dependency} solution_dependency LEFT JOIN {lab_migration_dependency_files} dependency
+          ON solution_dependency.dependency_id = dependency.id
+          WHERE solution_dependency.solution_id = %d", $form_state['values']['run']['solution']);
           while ($dependency_list_data = db_fetch_object($dependency_list_q))
           {
-            $example_file_type = 'Dependency file';
+            $solution_file_type = 'Dependency file';
             $temp_caption = '';
             if ($dependency_list_data->dependency_caption)
               $temp_caption = ' (' . $dependency_list_data->dependency_caption . ')';
-            $example_files_rows[] = array(l($dependency_list_data->dependency_filename, 'download/dependency/' . $dependency_list_data->dependency_id) . $temp_caption, $example_file_type);
+            $solution_files_rows[] = array(l($dependency_list_data->dependency_filename, 'lab_migration/download/dependency/' . $dependency_list_data->dependency_id) . $temp_caption, $solution_file_type);
           }
 
         /* creating list of files table */
-        $example_files_header = array('Filename', 'Type');
-        $example_files = theme_table($example_files_header, $example_files_rows); 
+        $solution_files_header = array('Filename', 'Type');
+        $solution_files = theme_table($solution_files_header, $solution_files_rows); 
       }
-      $form['run']['download_example'] = array(
+      $form['run']['download_solution'] = array(
         '#type' => 'item',
-        '#value' => l('Download Example', 'download/example/' . $example_default_value),
+        '#value' => l('Download Solution', 'lab_migration/download/solution/' . $solution_default_value),
       );
-      $form['run']['edit_example'] = array(
+      $form['run']['edit_solution'] = array(
         '#type'  => 'item',
-        '#value' => l('Edit Example', 'code_approval/editcode/' . $example_default_value),
+        '#value' => l('Edit Solution', 'code_approval/editcode/' . $solution_default_value),
       );
 
-      $form['run']['example_files'] = array(
+      $form['run']['solution_files'] = array(
         '#type'  => 'item',
-        '#title' => 'List of example files',
-        '#value' => $example_files,
+        '#title' => 'List of solution files',
+        '#value' => $solution_files,
       );
 
-      $form['run']['approve_example'] = array(
+      $form['run']['approve_solution'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Approve Example'),
+        '#title' => t('Approve Solution'),
       );
-      $form['run']['unapprove_example'] = array(
+      $form['run']['unapprove_solution'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Pending Review Example'),
+        '#title' => t('Pending Review Solution'),
       );
-      $form['run']['disapprove_example'] = array(
+      $form['run']['disapprove_solution'] = array(
         '#type'  => 'checkbox',
-        '#title' => t('Dis-approve Example (This will delete the example)'),
+        '#title' => t('Dis-approve Solution (This will delete the solution)'),
         '#prefix' => '<div style="color:red;"><strong>',
         '#suffix' => '</strong></div>',
       );
@@ -276,184 +276,183 @@ function bulk_approval_form_submit($form, &$form_state)
 
 	if ($form_state['clicked_button']['#value'] == 'Submit')
 	{
-		if ($form_state['values']['run']['book'])
-			del_book_pdf($form_state['values']['run']['book']);
+		if ($form_state['values']['run']['lab'])
+			del_lab_pdf($form_state['values']['run']['lab']);
 
 	  if (user_access('bulk manage code'))
     {
-      if ($form_state['values']['run']['approve_book'] == "1")
+      if ($form_state['values']['run']['approve_lab'] == "1")
       {
 
-        /* approving entire book */
-        $chapter_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE preference_id = %d", $form_state['values']['run']['book']);
-        while ($chapter_data = db_fetch_object($chapter_q))
+        /* approving entire lab */
+        $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $form_state['values']['run']['lab']);
+        while ($experiment_data = db_fetch_object($experiment_q))
         {
-          db_query("UPDATE {lab_migration_example} SET approval_status = 1, approver_uid = %d WHERE chapter_id = %d AND approval_status = 0", $user->uid, $chapter_data->id);
+          db_query("UPDATE {lab_migration_solution} SET approval_status = 1, approver_uid = %d WHERE experiment_id = %d AND approval_status = 0", $user->uid, $experiment_data->id);
         }
-        drupal_set_message(t('Approved Entire Book.'), 'status');
+        drupal_set_message(t('Approved Entire Lab.'), 'status');
 
         /* email */
-        $email_subject = t('Your uploaded examples have been approved');
-        $email_body = t('Your all the uploaded examples for the book have been approved.');
+        $email_subject = t('Your uploaded solutions have been approved');
+        $email_body = t('Your all the uploaded solutions for the lab have been approved.');
 
-      } else if ($form_state['values']['run']['unapprove_book'] == "1") {
+      } else if ($form_state['values']['run']['unapprove_lab'] == "1") {
 
-        /* approving entire book */
-        $chapter_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE preference_id = %d", $form_state['values']['run']['book']);
-        while ($chapter_data = db_fetch_object($chapter_q))
+        /* pending review entire lab */
+        $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $form_state['values']['run']['lab']);
+        while ($experiment_data = db_fetch_object($experiment_q))
         {
-          db_query("UPDATE {lab_migration_example} SET approval_status = 0 WHERE chapter_id = %d", $chapter_data->id);
+          db_query("UPDATE {lab_migration_solution} SET approval_status = 0 WHERE experiment_id = %d", $experiment_data->id);
         }
-        drupal_set_message(t('Pending Review Entire Book.'), 'status');
+        drupal_set_message(t('Pending Review Entire Lab.'), 'status');
 
         /* email */
-        $email_subject = t('Your uploaded examples have been marked as pending');
-        $email_body = t('Your all the uploaded examples for the book have been marked as pending to be review. You will be able to see the exmaples after they have been approved by one of our reviewers.');
+        $email_subject = t('Your uploaded solutions have been marked as pending');
+        $email_body = t('Your all the uploaded solutions for the lab have been marked as pending to be review. You will be able to see the solutions after they have been approved by one of our reviewers.');
 
-      } else if ($form_state['values']['run']['disapprove_book'] == "1") {
+      } else if ($form_state['values']['run']['disapprove_lab'] == "1") {
 
         if (!user_access('bulk delete code'))
         {
-          drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Book.'), 'error');
+          drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Lab.'), 'error');
           return;
         }
 
-        if (delete_book($form_state['values']['run']['book']))
+        if (delete_lab($form_state['values']['run']['lab']))
         {
-          drupal_set_message(t('Dis-Approved and Deleted Entire Book.'), 'status');
+          drupal_set_message(t('Dis-Approved and Deleted Entire Lab.'), 'status');
         } else {
-          drupal_set_message(t('Error Dis-Approving and Deleting Entire Book.'), 'error');
+          drupal_set_message(t('Error Dis-Approving and Deleting Entire Lab.'), 'error');
         }
 
         /* email */
-        $email_subject = t('Your uploaded examples have been marked as dis-approved');
-        $email_body = t('Your all the uploaded examples for the whole book have been marked as dis-approved.
+        $email_subject = t('Your uploaded solutions have been marked as dis-approved');
+        $email_body = t('Your all the uploaded solutions for the whole Lab have been marked as dis-approved.
 
 Reason for dis-approval:
 
 ' . $form_state['values']['run']['message']);
 
-      } else if ($form_state['values']['run']['delete_book_including_proposal'] == "1") {
+      } else if ($form_state['values']['run']['delete_lab_including_proposal'] == "1") {
 
         if (!user_access('bulk delete code'))
         {
-          drupal_set_message(t('You do not have permission to Bulk Delete Entire Book Including Proposal.'), 'error');
+          drupal_set_message(t('You do not have permission to Bulk Delete Entire Lab Including Proposal.'), 'error');
           return;
         }
 
         /* check if dependency files are present */
-        $dep_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE preference_id = %d", $form_state['values']['run']['book']);
+        $dep_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE proposal_id = %d", $form_state['values']['run']['lab']);
         if ($dep_data = db_fetch_object($dep_q))
         {
-          drupal_set_message(t("Cannot delete book since it has dependency files that can be used by others. First delete the dependency files before deleing the Book."), 'error');
+          drupal_set_message(t("Cannot delete lab since it has dependency files that can be used by others. First delete the dependency files before deleting the lab."), 'error');
           return;
         }
 
-        if (delete_book($form_state['values']['run']['book']))
+        if (delete_lab($form_state['values']['run']['lab']))
         {
-          drupal_set_message(t('Dis-Approved and Deleted Entire Book examples.'), 'status');
+          drupal_set_message(t('Dis-Approved and Deleted Entire Lab solutions.'), 'status');
 
-          $dir_path = $root_path . $form_state['values']['run']['book'];
+          $dir_path = $root_path . $form_state['values']['run']['lab'];
           if (is_dir($dir_path))
           {
             $res = rmdir($dir_path);
             if (!$res)
             {
-              drupal_set_message(t("Cannot delete Book directory : " . $dir_path . ". Please contact administrator."), 'error');
+              drupal_set_message(t("Cannot delete Lab directory : " . $dir_path . ". Please contact administrator."), 'error');
               return;
             }
           } else {
-            drupal_set_message(t("Book directory not present : " . $dir_path . ". Skipping deleting book directory."), 'status');
+            drupal_set_message(t("Lab directory not present : " . $dir_path . ". Skipping deleting lab directory."), 'status');
           }
 
-          /* deleting preference and proposal */
-          $preference_q = db_query("SELECT * FROM {lab_migration_preference} WHERE id = %d", $form_state['values']['run']['book']);
-          $preference_data = db_fetch_object($preference_q);
-          $proposal_id = $preference_data->proposal_id;
-          db_query("DELETE FROM {lab_migration_preference} WHERE proposal_id = %d", $proposal_id);
+          /* deleting proposal */
+          $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $form_state['values']['run']['lab']);
+          $proposal_data = db_fetch_object($proposal_q);
+          $proposal_id = $proposal_data->id;
           db_query("DELETE FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
 
-          drupal_set_message(t('Deleted Book Proposal.'), 'status');
+          drupal_set_message(t('Deleted Lab Proposal.'), 'status');
 
           /* email */
-          $email_subject = t('Your uploaded examples including the book proposal have been deleted');
-          $email_body = t('Your all the uploaded examples including the book have been deleted permanently.');
+          $email_subject = t('Your uploaded solutions including the Lab proposal have been deleted');
+          $email_body = t('Your all the uploaded solutions including the Lab proposal have been deleted permanently.');
 
         } else {
-          drupal_set_message(t('Error Dis-Approving and Deleting Entire Book.'), 'error');
+          drupal_set_message(t('Error Dis-Approving and Deleting Entire Lab.'), 'error');
         }
 
-      } else if ($form_state['values']['run']['approve_chapter'] == "1") {
+      } else if ($form_state['values']['run']['approve_experiment'] == "1") {
 
-        db_query("UPDATE {lab_migration_example} SET approval_status = 1, approver_uid = %d WHERE chapter_id = %d AND approval_status = 0", $user->uid, $form_state['values']['run']['chapter']);
-        drupal_set_message(t('Approved Entire Chapter.'), 'status');
-
-        /* email */
-        $email_subject = t('Your uploaded examples have been approved');
-        $email_body = t('Your all the uploaded examples for the chapter have been approved.');
-
-      } else if ($form_state['values']['run']['unapprove_chapter'] == "1") {
-
-        db_query("UPDATE {lab_migration_example} SET approval_status = 0 WHERE chapter_id = %d", $form_state['values']['run']['chapter']);
-        drupal_set_message(t('Entire Chapter marked as Pending Review.'), 'status');
+        db_query("UPDATE {lab_migration_solution} SET approval_status = 1, approver_uid = %d WHERE experiment_id = %d AND approval_status = 0", $user->uid, $form_state['values']['run']['experiment']);
+        drupal_set_message(t('Approved Entire Experiment.'), 'status');
 
         /* email */
-        $email_subject = t('Your uploaded examples have been marked as pending');
-        $email_body = t('Your all the uploaded examples for the chapter have been marked as pending to be review.');
+        $email_subject = t('Your uploaded solutions have been approved');
+        $email_body = t('Your all the uploaded solutions for the experiment have been approved.');
 
-      } else if ($form_state['values']['run']['disapprove_chapter'] == "1") {
+      } else if ($form_state['values']['run']['unapprove_experiment'] == "1") {
+
+        db_query("UPDATE {lab_migration_solution} SET approval_status = 0 WHERE experiment_id = %d", $form_state['values']['run']['experiment']);
+        drupal_set_message(t('Entire Experiment marked as Pending Review.'), 'status');
+
+        /* email */
+        $email_subject = t('Your uploaded solutions have been marked as pending');
+        $email_body = t('Your all the uploaded solutions for the experiment have been marked as pending to be review.');
+
+      } else if ($form_state['values']['run']['disapprove_experiment'] == "1") {
 
         if (!user_access('bulk delete code'))
         {
-          drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Chapter.'), 'error');
+          drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Experiment.'), 'error');
           return;
         }
 
-        if (delete_chapter($form_state['values']['run']['chapter']))
+        if (delete_experiment($form_state['values']['run']['experiment']))
         {
-          drupal_set_message(t('Dis-Approved and Deleted Entire Chapter.'), 'status');
+          drupal_set_message(t('Dis-Approved and Deleted Entire Experiment.'), 'status');
         } else {
-          drupal_set_message(t('Error Dis-Approving and Deleting Entire Chapter.'), 'error');
+          drupal_set_message(t('Error Dis-Approving and Deleting Entire Experiment.'), 'error');
         }
 
         /* email */
-        $email_subject = t('Your uploaded example have been marked as dis-approved');
-        $email_body = t('Your uploaded example for the entire chapter have been marked as dis-approved.
+        $email_subject = t('Your uploaded solutions have been marked as dis-approved');
+        $email_body = t('Your uploaded solutions for the entire experiment have been marked as dis-approved.
 
 Reason for dis-approval:
 
 ' . $form_state['values']['run']['message']);
 
-      } else if ($form_state['values']['run']['approve_example'] == "1") {
+      } else if ($form_state['values']['run']['approve_solution'] == "1") {
 
-        db_query("UPDATE {lab_migration_example} SET approval_status = 1, approver_uid = %d WHERE id = %d", $user->uid, $form_state['values']['run']['example']);
-        drupal_set_message(t('Example approved.'), 'status');
-
-        /* email */
-        $email_subject = t('Your uploaded example has been approved');
-        $email_body = t('Your uploaded example has been approved.');
-
-      } else if ($form_state['values']['run']['unapprove_example'] == "1") {
-
-        db_query("UPDATE {lab_migration_example} SET approval_status = 0 WHERE id = %d", $form_state['values']['run']['example']);
-        drupal_set_message(t('Example marked as Pending Review.'), 'status');
+        db_query("UPDATE {lab_migration_solution} SET approval_status = 1, approver_uid = %d WHERE id = %d", $user->uid, $form_state['values']['run']['solution']);
+        drupal_set_message(t('Solution approved.'), 'status');
 
         /* email */
-        $email_subject = t('Your uploaded example has been marked as pending');
-        $email_body = t('Your uploaded example has been marked as pending to be review.');
+        $email_subject = t('Your uploaded solution has been approved');
+        $email_body = t('Your uploaded solution has been approved.');
 
-      } else if ($form_state['values']['run']['disapprove_example'] == "1") {
+      } else if ($form_state['values']['run']['unapprove_solution'] == "1") {
 
-        if (delete_example($form_state['values']['run']['example']))
+        db_query("UPDATE {lab_migration_solution} SET approval_status = 0 WHERE id = %d", $form_state['values']['run']['solution']);
+        drupal_set_message(t('Solution marked as Pending Review.'), 'status');
+
+        /* email */
+        $email_subject = t('Your uploaded solution has been marked as pending');
+        $email_body = t('Your uploaded solution has been marked as pending to be review.');
+
+      } else if ($form_state['values']['run']['disapprove_solution'] == "1") {
+
+        if (delete_solution($form_state['values']['run']['solution']))
         {
-          drupal_set_message(t('Example Dis-Approved and Deleted.'), 'status');
+          drupal_set_message(t('Solution Dis-Approved and Deleted.'), 'status');
         } else {
-          drupal_set_message(t('Error Dis-Approving and Deleting Example.'), 'error');
+          drupal_set_message(t('Error Dis-Approving and Deleting Solution.'), 'error');
         }
 
         /* email */
-        $email_subject = t('Your uploaded example has been marked as dis-approved');
-        $email_body = t('Your uploaded example has been marked as dis-approved.
+        $email_subject = t('Your uploaded solution has been marked as dis-approved');
+        $email_body = t('Your uploaded solution has been marked as dis-approved.
 
 Reason for dis-approval:
 

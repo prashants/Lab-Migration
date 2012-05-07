@@ -223,6 +223,48 @@ function lab_migration_menu()
     'file' => 'upload_code_delete.inc',
   );
 
+  /* CODE DOWNLOADS */
+  $items['lab_migration/download/file'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_solution_file',
+    'access arguments' => array('download code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'download.inc',
+  );
+  $items['lab_migration/download/dependency'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_dependency_file',
+    'access arguments' => array('download code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'download.inc',
+  );
+  $items['lab_migration/download/solution'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_solution',
+    'access arguments' => array('download code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'download.inc',
+  );
+  $items['lab_migration/download/experiment'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_experiment',
+    'access arguments' => array('download code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'download.inc',
+  );
+  $items['lab_migration/download/lab'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_lab',
+    'access arguments' => array('download code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'download.inc',
+  );
+
   return $items;
 }
 
@@ -1160,215 +1202,3 @@ function get_proposal() {
   return FALSE;
 }
 
-/****************************** DELETION FUNCTIONS ****************************/
-
-function delete_example($example_id)
-{
-  global $user;
-  $root_path = lab_migration_path();
-  $status = TRUE;
-
-  $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE id = %d", $example_id);
-  $example_data = db_fetch_object($example_q);
-  if (!$example_data)
-  {
-    drupal_set_message(t('Invalid example.'), 'error');
-    return FALSE;
-  }
-
-  $chapter_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE id = %d", $example_data->chapter_id);
-  $chapter_data = db_fetch_object($chapter_q);
-  if (!$chapter_data)
-  {
-    drupal_set_message(t('Invalid example chapter.'), 'error');
-    return FALSE;
-  }
-
-  /* deleting example files */
-  $examples_files_q = db_query("SELECT * FROM {lab_migration_example_files} WHERE example_id = %d", $example_id);
-  while ($examples_files_data = db_fetch_object($examples_files_q))
-  {
-    if (!file_exists($root_path . $examples_files_data->filepath))
-    {
-      $status = FALSE;
-      drupal_set_message(t('Error deleting !file. File does not exists.', array('!file' => $examples_files_data->filepath)), 'error');
-      continue;
-    }
-
-    /* removing example file */
-    if (!unlink($root_path . $examples_files_data->filepath))
-    {
-      $status = FALSE;
-      drupal_set_message(t('Error deleting !file', array('!file' => $examples_files_data->filepath)), 'error');
-
-      /* sending email to admins */
-      $email_to = variable_get('lab_migration_emails', '');
-      $param['standard']['subject'] = "[ERROR] Error deleting example file";
-      $param['standard']['body'] = "Error deleting example files by " . $user->uid . " at " . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . " :
-        example id : " . $example_id . "
-        file id : " .  $examples_files_data->id . "
-        file path : " . $examples_files_data->filepath;
-      if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
-        drupal_set_message('Error sending email message.', 'error');
-    } else {
-      /* deleting example files database entries */
-      db_query("DELETE FROM {lab_migration_example_files} WHERE id = %d", $examples_files_data->id);
-    }
-  }
-
-  if (!$status)
-    return FALSE;
-
-  /* removing example folder */
-  $ex_path = $chapter_data->preference_id . '/' . 'CH' . $chapter_data->number . '/' . 'EX' . $example_data->number;
-  $dir_path = $root_path . $ex_path;
-  if (is_dir($dir_path))
-  {
-    if (!rmdir($dir_path))
-    {
-      drupal_set_message(t('Error deleting folder !folder', array('!folder' => $dir_path)), 'error');
-
-      /* sending email to admins */
-      $email_to = variable_get('lab_migration_emails', '');
-      $param['standard']['subject'] = "[ERROR] Error deleting folder";
-      $param['standard']['body'] = "Error deleting folder " . $dir_path . " by " . $user->uid . " at " . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
-      if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
-        drupal_set_message('Error sending email message.', 'error');
-      return FALSE;
-    }
-  } else {
-    drupal_set_message(t('Cannot delete example folder. !folder does not exists.', array('!folder' => $dir_path)), 'error');
-    return FALSE;
-  }
-
-  /* deleting example dependency and exmaple database entries */
-  db_query("DELETE FROM {lab_migration_example_dependency} WHERE example_id = %d", $example_id);
-  db_query("DELETE FROM {lab_migration_example} WHERE id = %d", $example_id);
-
-  return $status;
-}
-
-function delete_chapter($chapter_id)
-{
-  $status = TRUE;
-  $root_path = lab_migration_path();
-
-  $chapter_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE id = %d", $chapter_id);
-  $chapter_data = db_fetch_object($chapter_q);
-  if (!$chapter_data)
-  {
-    drupal_set_message('Invalid chapter.', 'error');
-    return FALSE;
-  }
-
-  /* deleting examples */
-  $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE chapter_id = %d", $chapter_id);
-  while ($example_data = db_fetch_object($example_q))
-  {
-    if (!delete_example($example_data->id))
-      $status = FALSE;
-  }
-
-  if ($status)
-  {
-    $dir_path = $root_path . $chapter_data->preference_id . '/CH' . $chapter_data->number;
-
-    if (is_dir($dir_path))
-    {
-      $res = rmdir($dir_path);
-      if (!$res)
-      {
-        drupal_set_message(t('Error deleting chapter folder !folder', array('!folder' => $dir_path)), 'error');
-  
-        /* sending email to admins */
-        $email_to = variable_get('lab_migration_emails', '');
-        $param['standard']['subject'] = "[ERROR] Error deleting folder";
-        $param['standard']['body'] = "Error deleting folder " . $dir_path;
-        if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
-          drupal_set_message('Error sending email message.', 'error');
-        return FALSE;
-      } else {
-        /* deleting chapter details from database */
-        db_query("DELETE FROM {lab_migration_chapter} WHERE id = %d", $chapter_id);
-        return TRUE;
-      }
-    } else {
-      drupal_set_message(t('Cannot delete chapter folder. !folder does not exists.', array('!folder' => $dir_path)), 'error');
-      return FALSE;
-    }
-  }
-  return FALSE;
-}
-
-function delete_book($book_id)
-{
-  $status = TRUE;
-  $root_path = lab_migration_path();
-
-  $preference_q = db_query("SELECT * FROM {lab_migration_preference} WHERE id = %d", $book_id);
-  $preference_data = db_fetch_object($preference_q);
-  if (!$preference_data)
-  {
-    drupal_set_message('Invalid book.', 'error');
-    return FALSE;
-  }
-
-  /* delete chapters */
-  $chapter_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE preference_id = %d", $preference_data->id);
-  while ($chapter_data = db_fetch_object($chapter_q))
-  {
-    if (!delete_chapter($chapter_data->id))
-    {
-      $status = FALSE;
-    }
-  }
-  return $status;
-}
-
-function delete_file($file_id)
-{
-  $root_path = lab_migration_path();
-
-  $file_q = db_query("SELECT * FROM {lab_migration_example_files} WHERE id = %d LIMIT 1", $file_id);
-  $file_data = db_fetch_object($file_q);
-  if (!$file_data)
-  {
-    drupal_set_message('Invalid file specified.', 'error');
-    return FALSE;
-  }
-
-  if (!file_exists($root_path . $file_data->filepath))
-  {
-    drupal_set_message(t('Error deleting !file. File does not exists.', array('!file' => $file_data->filepath)), 'error');
-    return FALSE;
-  }
-
-  /* removing example file */
-  if (!unlink($root_path . $file_data->filepath))
-  {
-    drupal_set_message(t('Error deleting !file', array('!file' => $file_data->filepath)), 'error');
-
-    /* sending email to admins */
-    $email_to = variable_get('lab_migration_emails', '');
-    $param['standard']['subject'] = "[ERROR] Error deleting file";
-    $param['standard']['body'] = "Error deleting file by " . $user->uid . " at " . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . " :
-      file id : " .  $file_id . "
-      file path : " . $file_data->filepath;
-    if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
-      drupal_set_message('Error sending email message.', 'error');
-    return FALSE;
-  } else {
-    /* deleting example files database entries */
-    db_query("DELETE FROM {lab_migration_example_files} WHERE id = %d", $file_id);
-    return TRUE;
-  }
-}
-
-function del_book_pdf($book_id)
-{
-  $root_path = lab_migration_path();
-  $dir_path = $root_path . "latex/";
-  $pdf_filename = "book_" . $book_id . ".pdf";
-  if (file_exists($dir_path . $pdf_filename))
-    unlink($dir_path . $pdf_filename);
-}
