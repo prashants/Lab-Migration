@@ -180,7 +180,7 @@ function _list_existing_dependency($proposal_id)
     $temp_caption = '';
     if ($proposal_dependency_files_data->caption)
       $temp_caption = ' (' . $proposal_dependency_files_data->caption . ')';
-    $return_html .= '<li>' . l($proposal_dependency_files_data->filename . $temp_caption, 'download/dependency/' . $proposal_dependency_files_data->id) . '</li>';
+    $return_html .= '<li>' . l($proposal_dependency_files_data->filename . $temp_caption, 'lab_migration/download/dependency/' . $proposal_dependency_files_data->id) . '</li>';
     $counter++;
   }
   if ($counter == 0)

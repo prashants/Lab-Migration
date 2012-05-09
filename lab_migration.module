@@ -264,6 +264,32 @@ function lab_migration_menu()
     'type' => MENU_CALLBACK,
     'file' => 'download.inc',
   );
+  $items['lab_migration/full_download/experiment'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_full_experiment',
+    'access arguments' => array('approve code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'full_download.inc',
+  );
+  $items['lab_migration/full_download/lab'] = array(
+    'title' => 'Code Download',
+    'description' => 'Code Download', 
+    'page callback' => 'lab_migration_download_full_lab',
+    'access arguments' => array('approve code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'full_download.inc',
+  );
+
+  /* DOWNLOAD FOR EVERYONE */
+  $items['lab_migration_run'] = array(
+    'title' => 'Download Codes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lab_migration_run_form'),
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'run.inc',
+  );
 
   return $items;
 }

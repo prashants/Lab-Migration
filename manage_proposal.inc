@@ -212,7 +212,7 @@ function proposal_approval_form($form_state)
 		'#required' => TRUE,
 	);
 
-  $form['message'] = array(
+  $form['message'] = array(	
     '#type' => 'textarea',
     '#title' => t('Reason for disapproval'),
   );
@@ -662,11 +662,25 @@ function proposal_edit_form($form_state)
 
 function proposal_edit_form_validate($form, &$form_state)
 {
+  $proposal_id = (int)arg(3);
+
   if ($form_state['values']['solution_provider_uid'] == 3) {
   	if (!user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])))) {
   		form_set_error('solution_provider_user_name', t('Solution provider user name does not exists'));
   	}
   }
+
+  /* check before delete proposal */
+  if ($form_state['values']['delete_proposal'] == 1) {
+		$experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
+		while ($experiment_data = db_fetch_object($experiment_q)) {
+			$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d", $experiment_data->id);
+			if (db_fetch_object($solution_q)) {
+				form_set_error('', t('Cannot delete proposal since there are solutions already uploaded. Use the "Bulk Manage" interface to delete this proposal'));
+			}
+		}
+  }
+  return;
 }
 
 function proposal_edit_form_submit($form, &$form_state)

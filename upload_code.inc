@@ -21,7 +21,7 @@ function list_experiments()
   $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number ASC", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
   {
-    $experiment_rows[] = array($experiment_data->number, $experiment_data->title, '', '', '');
+    $experiment_rows[] = array($experiment_data->number . ')&nbsp&nbsp&nbsp&nbsp' . $experiment_data->title, '', '', '');
     /* get solution list */
     $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d ORDER BY id ASC", $experiment_data->id);
     if ($solution_q) {
@@ -33,9 +33,9 @@ function list_experiments()
     		default: $solution_status = "Unknown"; break;
     		}
     		if ($solution_data->approval_status == 0)
-    			$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
+    			$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
     		else
-    			$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, '');
+    			$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, '');
     		/* get solution files */
     		$solution_files_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d ORDER BY id ASC", $solution_data->id);
     		if ($solution_files_q) {
@@ -48,21 +48,22 @@ function list_experiments()
     				case 'U': $code_file_type = 'Unknown'; break;
     				default: $code_file_type = 'Unknown'; break;
     				}
-    				$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_files_data->filename, $code_file_type, '', '');
+    				$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . l($solution_files_data->filename, 'lab_migration/download/file/' . $solution_files_data->id), $code_file_type, '', '');
     			}
     		}
-    		/* get dependencies files */
-    		$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE proposal_id = %d ORDER BY id ASC", $proposal_data->id);
-    		if ($dependency_files_q) {
-    			while ($dependency_files_data = db_fetch_object($dependency_files_q)) {
-    				$experiment_rows[] = array('', "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $dependency_files_data->filename, 'Dependency', '', '');
-    			}
-    		}
+				/* get dependencies files */
+				$dependency_q = db_query("SELECT * FROM {lab_migration_solution_dependency} WHERE solution_id = %d ORDER BY id ASC", $solution_data->id);
+				while ($dependency_data = db_fetch_object($dependency_q))
+				{
+					$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_data->dependency_id);
+					$dependency_files_data = db_fetch_object($dependency_files_q);
+					$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . l($dependency_files_data->filename, 'lab_migration/download/dependency/' . $dependency_files_data->id), 'Dependency', '', '');
+				}
     	}
     }
   }
 
-  $experiment_header = array('Exp. Number', 'Title of the Experiment', 'Type', 'Status', 'Actions');
+  $experiment_header = array('No. Title of the Experiment', 'Type', 'Status', 'Actions');
   $return_html .= theme_table($experiment_header, $experiment_rows);
   return $return_html;
 }
@@ -516,7 +517,7 @@ function _list_of_dependency_files()
     $temp_caption = '';
     if ($dependency_files_data->caption)
       $temp_caption .= ' (' . $dependency_files_data->caption . ')';
-    $dependency_files[$dependency_files_data->id] = l($dependency_files_data->filename . $temp_caption, 'download/dependency/' . $dependency_files_data->id);
+    $dependency_files[$dependency_files_data->id] = l($dependency_files_data->filename . $temp_caption, 'lab_migration/download/dependency/' . $dependency_files_data->id);
     $dependency_files_class[$dependency_files_data->id] = $dependency_files_data->proposal_id;
   }
   return array($dependency_files, $dependency_files_class);

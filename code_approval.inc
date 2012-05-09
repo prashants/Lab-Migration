@@ -138,15 +138,17 @@ function code_approval_form($form_state)
 			case 'U': $code_file_type = 'Unknown'; break;
 			default: $code_file_type = 'Unknown'; break;
 			}
-			$solution_files_html .= l($solution_files_data->filename, '') . ' (' . $code_file_type . ')' . '<br/>';
+			$solution_files_html .= l($solution_files_data->filename, 'lab_migration/download/file/' . $solution_files_data->id) . ' (' . $code_file_type . ')' . '<br/>';
 		}
 	}
 	/* get dependencies files */
-	$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE proposal_id = %d ORDER BY id ASC", $proposal_data->id);
-	if ($dependency_files_q) {
-		while ($dependency_files_data = db_fetch_object($dependency_files_q)) {
-			$solution_files_html .= l($dependency_files_data->filename, '') . ' (' . 'Dependency' . ')' . '<br/>';
-		}
+	$dependency_q = db_query("SELECT * FROM {lab_migration_solution_dependency} WHERE solution_id = %d ORDER BY id ASC", $solution_id);
+	while ($dependency_data = db_fetch_object($dependency_q))
+	{
+		$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_data->dependency_id);
+		$dependency_files_data = db_fetch_object($dependency_files_q);
+		$solution_file_type = 'Dependency file';
+		$solution_files_html .= l($dependency_files_data->filename, 'lab_migration/download/dependency/' . $dependency_files_data->id) . ' (' . 'Dependency' . ')' . '<br/>';
 	}
 
   $form['solution_files'] = array(

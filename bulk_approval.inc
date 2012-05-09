@@ -202,18 +202,14 @@ function bulk_approval_form($form_state)
         }
 
         /* dependency files */
-        $dependency_list_q = db_query("SELECT dependency.id as dependency_id, dependency.filename as dependency_filename, dependency.caption as dependency_caption
-          FROM {lab_migration_solution_dependency} solution_dependency LEFT JOIN {lab_migration_dependency_files} dependency
-          ON solution_dependency.dependency_id = dependency.id
-          WHERE solution_dependency.solution_id = %d", $form_state['values']['run']['solution']);
-          while ($dependency_list_data = db_fetch_object($dependency_list_q))
-          {
-            $solution_file_type = 'Dependency file';
-            $temp_caption = '';
-            if ($dependency_list_data->dependency_caption)
-              $temp_caption = ' (' . $dependency_list_data->dependency_caption . ')';
-            $solution_files_rows[] = array(l($dependency_list_data->dependency_filename, 'lab_migration/download/dependency/' . $dependency_list_data->dependency_id) . $temp_caption, $solution_file_type);
-          }
+        $dependency_q = db_query("SELECT * FROM {lab_migration_solution_dependency} WHERE solution_id = %d", $form_state['values']['run']['solution']);
+				while ($dependency_data = db_fetch_object($dependency_q))
+				{
+					$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_data->dependency_id);
+					$dependency_files_data = db_fetch_object($dependency_files_q);
+					$solution_file_type = 'Dependency file';
+					$solution_files_rows[] = array(l($dependency_files_data->filename, 'lab_migration/download/dependency/' . $dependency_files_data->dependency_id), $solution_file_type);
+				}
 
         /* creating list of files table */
         $solution_files_header = array('Filename', 'Type');
