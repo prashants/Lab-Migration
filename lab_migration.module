@@ -281,6 +281,24 @@ function lab_migration_menu()
     'file' => 'full_download.inc',
   );
 
+  /* latex script for lab generation */
+  $items['lab_migration/generate_lab'] = array(
+    'title' => 'Generate Lab',
+    'description' => 'Generate Lab From Latex Script', 
+    'page callback' => 'lab_migration_download_lab_pdf',
+    'access arguments' => array('generate book'),
+    'type' => MENU_CALLBACK,
+    'file' => 'latex.inc',
+  );
+  $items['lab_migration/delete_lab'] = array(
+    'title' => 'Delete Lab PDF',
+    'description' => 'Delete Lab PDF', 
+    'page callback' => 'lab_migration_delete_lab_pdf',
+    'access arguments' => array('approve code'),
+    'type' => MENU_CALLBACK,
+    'file' => 'latex.inc',
+  );
+
   /* DOWNLOAD FOR EVERYONE */
   $items['lab_migration_run'] = array(
     'title' => 'Download Codes',

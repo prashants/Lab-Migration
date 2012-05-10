@@ -12,7 +12,7 @@ function list_experiments()
   }
 
   $return_html = '<br />';
-  $return_html .= '<strong>Title of the Experiment:</strong><br />' . $proposal_data->lab_title . '<br /><br />';
+  $return_html .= '<strong>Title of the Lab:</strong><br />' . $proposal_data->lab_title . '<br /><br />';
   $return_html .= '<strong>Proposer Name:</strong><br />' . $proposal_data->name_title . ' ' . $proposal_data->name . '<br /><br />';
   $return_html .= l('Upload Example Code', 'lab_migration/code/upload') . '<br />';
 
@@ -21,7 +21,7 @@ function list_experiments()
   $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number ASC", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
   {
-    $experiment_rows[] = array($experiment_data->number . ')&nbsp&nbsp&nbsp&nbsp' . $experiment_data->title, '', '', '');
+    $experiment_rows[] = array($experiment_data->number . ')&nbsp;&nbsp;&nbsp;&nbsp;' . $experiment_data->title, '', '', '');
     /* get solution list */
     $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d ORDER BY id ASC", $experiment_data->id);
     if ($solution_q) {
@@ -32,10 +32,11 @@ function list_experiments()
     		case 1: $solution_status = "Approved"; break;
     		default: $solution_status = "Unknown"; break;
     		}
-    		if ($solution_data->approval_status == 0)
-    			$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
-    		else
-    			$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, '');
+    		if ($solution_data->approval_status == 0) {
+    			$experiment_rows[] = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, l('Delete', 'lab_migration/code/delete/' . $solution_data->id));
+    		} else {
+    			$experiment_rows[] = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . $solution_data->code_number . "   " . $solution_data->caption, '', $solution_status, '');
+    		}
     		/* get solution files */
     		$solution_files_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d ORDER BY id ASC", $solution_data->id);
     		if ($solution_files_q) {
@@ -48,7 +49,7 @@ function list_experiments()
     				case 'U': $code_file_type = 'Unknown'; break;
     				default: $code_file_type = 'Unknown'; break;
     				}
-    				$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . l($solution_files_data->filename, 'lab_migration/download/file/' . $solution_files_data->id), $code_file_type, '', '');
+    				$experiment_rows[] = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . l($solution_files_data->filename, 'lab_migration/download/file/' . $solution_files_data->id), $code_file_type, '', '');
     			}
     		}
 				/* get dependencies files */
@@ -57,7 +58,7 @@ function list_experiments()
 				{
 					$dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_data->dependency_id);
 					$dependency_files_data = db_fetch_object($dependency_files_q);
-					$experiment_rows[] = array("&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp" . l($dependency_files_data->filename, 'lab_migration/download/dependency/' . $dependency_files_data->id), 'Dependency', '', '');
+					$experiment_rows[] = array("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" . l($dependency_files_data->filename, 'lab_migration/download/dependency/' . $dependency_files_data->id), 'Dependency', '', '');
 				}
     	}
     }
@@ -273,7 +274,7 @@ function upload_code_form($form_state)
 function upload_code_form_validate($form, &$form_state)
 {
   if (!check_code_number($form_state['values']['code_number']))
-    form_set_error('code_number', t('Invalid Code Number. Code Number can contain only alphabets and numbers sepereated by dot.'));
+    form_set_error('code_number', t('Invalid Code Number. Code Number can contain only number dot number.'));
 
   if (!check_name($form_state['values']['code_caption']))
     form_set_error('code_caption', t('Caption can contain only alphabets, numbers and spaces.'));
