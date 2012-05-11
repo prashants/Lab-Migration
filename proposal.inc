@@ -213,7 +213,7 @@ function lab_migration_proposal_form_submit($form, &$form_state)
   if (!drupal_mail('lab_migration', 'proposal_received', $email_to , language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
     drupal_set_message('Error sending email message.', 'error');
 
-  drupal_set_message(t('We have received you lab migration proposal. We will get back to you soon.'), 'status');
+  drupal_set_message(t('We have received you Lab migration proposal. We will get back to you soon.'), 'status');
   drupal_goto('');
 }
 

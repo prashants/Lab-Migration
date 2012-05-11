@@ -84,13 +84,13 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
   }
   $solution_provider_filedata .= $solution_provider_user->name . $sep . $solution_provider_user->mail . $eol;
 
-  $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE lab_id = %d ORDER BY number DESC", $proposal_data->id);
+  $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number DESC", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
   {
   	if ($full_lab)
-  		$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d ORDER BY number DESC", $experiment_data->id);
+  		$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d ORDER BY code_number DESC", $experiment_data->id);
   	else
-    	$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d AND approval_status = 1 ORDER BY number DESC", $experiment_data->id);
+    	$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d AND approval_status = 1 ORDER BY code_number DESC", $experiment_data->id);
     while ($solution_data = db_fetch_object($solution_q))
     {
       $solution_files_q = db_query("SELECT * FROM {lab_migration_solution_files} WHERE solution_id = %d", $solution_data->id);

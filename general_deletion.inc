@@ -165,7 +165,6 @@ function delete_lab($lab_id)
   return $status;
 }
 
-
 function delete_file($file_id)
 {
   $root_path = lab_migration_path();

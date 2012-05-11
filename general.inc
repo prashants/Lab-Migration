@@ -200,4 +200,27 @@ function list_examples()
   $example_header = array('Example No.', 'Caption', 'Status', 'Files', 'Action');
   $return_html .= theme_table($example_header, $example_rows);
   return $return_html;
-}                                                       
+}
+
+function get_category_name($category_id) {
+    $category_data = '';
+  	switch ($category_id)
+  	{
+    case 0: $category_data = 'Not Selected'; break;
+    case 1: $category_data = 'Fluid Mechanics'; break;
+    case 2: $category_data = 'Control Theory & Control Systems'; break;
+    case 3: $category_data = 'Chemical Engineering'; break;
+    case 4: $category_data = 'Thermodynamics'; break;
+    case 5: $category_data = 'Mechanical Engineering'; break;
+    case 6: $category_data = 'Signal Processing'; break;
+    case 7: $category_data = 'Digital Communications'; break;
+    case 8: $category_data = 'Electrical Technology'; break;
+    case 9: $category_data = 'Mathematics & Pure Science'; break;
+    case 10: $category_data = 'Analog Electronics'; break;
+    case 11: $category_data = 'Digital Electronics'; break;
+    case 12: $category_data = 'Computer Programming'; break;
+    case 13: $category_data = 'Others'; break;
+    default: $category_data = 'Unknown'; break;
+  	}
+  	return $category_data;
+}
