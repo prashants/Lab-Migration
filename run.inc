@@ -9,7 +9,19 @@ function lab_migration_run_form($form_state)
   /* default value for ahah fields */
   if (!isset($form_state['storage']['run']['lab']))
   {
-    $lab_default_value = 0;
+    /* get the book id from url */
+    $url_lab_id = (int)arg(1);
+    if ($url_lab_id)
+    {
+      /* add javascript for book selected */
+      $js = " $(document).ready(function() {
+        $('#edit-run-lab').val(" . $url_lab_id . ");
+        $('#edit-run-lab').change();
+      });";
+      drupal_add_js($js, 'inline', 'footer');
+    } else {
+      $lab_default_value = 0;
+    }
   } else {
     $lab_default_value =  $form_state['storage']['run']['lab'];
   }

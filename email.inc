@@ -10,9 +10,24 @@ function lab_migration_mail($key, &$message, $params)
   switch ($key)
   {
     case 'proposal_received':
+
       /* initializing data */
       $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_received']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
+
+      if ($proposal_data->solution_display == 1) {
+      	$solution_display = 'Yes';
+      } else {
+      	$solution_display = 'No';
+      }
+
+			if ($proposal_data->solution_provider_uid == 0) {
+				$solution_provider_user = 'Open';
+			} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
+				$solution_provider_user = 'Proposer';
+			} else {
+				$solution_provider_user = 'Unknown';
+			}
 
       $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_received']['proposal_id'], 1);
       $experiment_list = '
@@ -36,6 +51,10 @@ Contact Phone : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 
+Display solution on website : ' . $solution_display . '
+
+Solution Provided By : ' . $solution_provider_user . '
+
 List of experiments : ' . $experiment_list . '
 
 Your proposal is under review and you will soon receive an email from us regarding the same.
@@ -46,60 +65,54 @@ Best Wishes,
       break;
 
     case 'proposal_disapproved':
+
       /* initializing data */
       $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_disapproved']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
-      $preference1_q = db_query("SELECT * FROM {lab_migration_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 1);
-      $preference1_data = db_fetch_object($preference1_q);
-      $preference2_q = db_query("SELECT * FROM {lab_migration_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 2);
-      $preference2_data = db_fetch_object($preference2_q);
-      $preference3_q = db_query("SELECT * FROM {lab_migration_preference} WHERE proposal_id = %d AND pref_number = %d LIMIT 1", $params['proposal_disapproved']['proposal_id'], 3);
-      $preference3_data = db_fetch_object($preference3_q);
+
+      if ($proposal_data->solution_display == 1) {
+      	$solution_display = 'Yes';
+      } else {
+      	$solution_display = 'No';
+      }
+
+			if ($proposal_data->solution_provider_uid == 0) {
+				$solution_provider_user = 'Open';
+			} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
+				$solution_provider_user = 'Proposer';
+			} else {
+				$solution_provider_user = 'Unknown';
+			}
+
+      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_disapproved']['proposal_id'], 1);
+      $experiment_list = '
+      	';
+      while ($experiment_data = db_fetch_object($experiment_q)) {
+      	$experiment_list .= $experiment_data->number . ' ' . $experiment_data->title . '
+      	';
+      }
+
       $user_data = user_load($params['proposal_disapproved']['user_id']);
 
-      $message['subject'] = t('[!site_name] Your book proposal has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Your Lab migration proposal has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Your following book proposal has been disapproved:
+Your following Lab migration proposal has been disapproved:
 
 Reason for disapproval: ' . $proposal_data->message . '
 
-Full Name : ' . $proposal_data->full_name . '
+Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Mobile : ' . $proposal_data->mobile . '
-Course : ' . $proposal_data->course . '
-Department/Branch : ' . $proposal_data->branch . '
-University/Institute : ' .  $proposal_data->university . '
-College Teacher / Professor : ' . $proposal_data->faculty . '
-Reviewer : ' .  $proposal_data->reviewer . '
-Expected date of completion : ' .  date('d-m-Y', $proposal_data->completion_date) . '
+Contact Phone : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
+University/Institute : ' . $proposal_data->university . '
 
-Your Book Preferences :
+Display solution on website : ' . $solution_display . '
 
-Book Preference 1 :-
-Title of the book : ' . $preference1_data->book . '
-Author name : ' . $preference1_data->author . '
-ISBN No. : ' . $preference1_data->isbn . '
-Publisher and Place : ' . $preference1_data->publisher . '
-Edition : ' . $preference1_data->edition . '
-Year of publication : ' . $preference1_data->year . '
+Solution Provided By : ' . $solution_provider_user . '
 
-Book Preference 2 :-
-Title of the book : ' . $preference2_data->book . '
-Author name : ' . $preference2_data->author . '
-ISBN No. : ' . $preference2_data->isbn . '
-Publisher and Place : ' . $preference2_data->publisher . '
-Edition : ' . $preference2_data->edition . '
-Year of publication : ' . $preference2_data->year . '
-
-Book Preference 3 :-
-Title of the book : ' . $preference3_data->book . '
-Author name : ' . $preference3_data->author . '
-ISBN No. : ' . $preference3_data->isbn . '
-Publisher and Place : ' . $preference3_data->publisher . '
-Edition : ' . $preference3_data->edition . '
-Year of publication : ' . $preference3_data->year . '
+List of experiments : ' . $experiment_list . '
 
 Best Wishes,
 
@@ -107,34 +120,52 @@ Best Wishes,
       break;
 
     case 'proposal_approved':
-      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_approved']['proposal_id']);
-      $proposal_data = db_fetch_object($proposal_q);
-      $approved_preference_q = db_query("SELECT * FROM {lab_migration_preference} WHERE proposal_id = %d AND approval_status = 1 LIMIT 1", $params['proposal_approved']['proposal_id']);
-      $approved_preference_data = db_fetch_object($approved_preference_q);
-      $user_data = user_load($params['proposal_approved']['user_id']);
 
-      $message['subject'] = t('[!site_name] Your book proposal has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
+      /* initializing data */
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_disapproved']['proposal_id']);
+      $proposal_data = db_fetch_object($proposal_q);
+
+      if ($proposal_data->solution_display == 1) {
+      	$solution_display = 'Yes';
+      } else {
+      	$solution_display = 'No';
+      }
+
+			if ($proposal_data->solution_provider_uid == 0) {
+				$solution_provider_user = 'Open';
+			} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
+				$solution_provider_user = 'Proposer';
+			} else {
+				$solution_provider_user = 'Unknown';
+			}
+
+      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_disapproved']['proposal_id'], 1);
+      $experiment_list = '
+      	';
+      while ($experiment_data = db_fetch_object($experiment_q)) {
+      	$experiment_list .= $experiment_data->number . ' ' . $experiment_data->title . '
+      	';
+      }
+
+      $user_data = user_load($params['proposal_disapproved']['user_id']);
+
+      $message['subject'] = t('[!site_name] Your Lab migration proposal has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Your following book proposal has been approved:
+Your following Lab migration proposal has been approved:
 
-Full Name : ' . $proposal_data->full_name . '
+Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Mobile : ' .  $proposal_data->mobile . '
-Course : ' . $proposal_data->course . '
-Department/Branch : ' . $proposal_data->branch . '
-University/Institute : ' .  $proposal_data->university . '
-College Teacher / Professor : ' . $proposal_data->faculty . '
-Reviewer : ' .  $proposal_data->reviewer . '
-Expected date of completion : ' .  date('d-m-Y', $proposal_data->completion_date) . '
+Contact Phone : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
+University/Institute : ' . $proposal_data->university . '
 
-Title of the book : ' . $approved_preference_data->book . '
-Author name : ' . $approved_preference_data->author . '
-ISBN No. : ' . $approved_preference_data->isbn . '
-Publisher and Place : ' . $approved_preference_data->publisher . '
-Edition : ' . $approved_preference_data->edition . '
-Year of publication : ' . $approved_preference_data->year . '
+Display solution on website : ' . $solution_display . '
+
+Solution Provided By : ' . $solution_provider_user . '
+
+List of experiments : ' . $experiment_list . '
 
 Best Wishes,
 
@@ -142,40 +173,61 @@ Best Wishes,
       break;
 
     case 'proposal_completed':
+
+      /* initializing data */
       $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_completed']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
-      $approved_preference_q = db_query("SELECT * FROM {lab_migration_preference} WHERE proposal_id = %d AND approval_status = 1 LIMIT 1", $params['proposal_completed']['proposal_id']);
-      $approved_preference_data = db_fetch_object($approved_preference_q);
+
+      if ($proposal_data->solution_display == 1) {
+      	$solution_display = 'Yes';
+      } else {
+      	$solution_display = 'No';
+      }
+
+			if ($proposal_data->solution_provider_uid == 0) {
+				$solution_provider_user = 'Open';
+			} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
+				$solution_provider_user = 'Proposer';
+			} else {
+				$user_data = user_load($proposal_data->solution_provider_uid);
+				if (!$user_data) {
+					$solution_provider_user = 'Unknown';
+				}
+			}
+
+      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_completed']['proposal_id'], 1);
+      $experiment_list = '
+      	';
+      while ($experiment_data = db_fetch_object($experiment_q)) {
+      	$experiment_list .= $experiment_data->number . ' ' . $experiment_data->title . '
+      	';
+      }
+
       $user_data = user_load($params['proposal_completed']['user_id']);
 
-      $message['subject'] = t('[!site_name] Congratulations for completion of the book.', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Congratulations for completion of the Lab migration', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Following book has been completed sucessfully by you:
+Following Lab migration has been completed sucessfully :
 
-Full Name : ' . $proposal_data->full_name . '
+Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Mobile : ' .  $proposal_data->mobile . '
-Course : ' . $proposal_data->course . '
-Department/Branch : ' . $proposal_data->branch . '
-University/Institute : ' .  $proposal_data->university . '
-College Teacher / Professor : ' . $proposal_data->faculty . '
-Reviewer : ' .  $proposal_data->reviewer . '
-Expected date of completion : ' .  date('d-m-Y', $proposal_data->completion_date) . '
+Contact Phone : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
+University/Institute : ' . $proposal_data->university . '
 
-Title of the book : ' . $approved_preference_data->book . '
-Author name : ' . $approved_preference_data->author . '
-ISBN No. : ' . $approved_preference_data->isbn . '
-Publisher and Place : ' . $approved_preference_data->publisher . '
-Edition : ' . $approved_preference_data->edition . '
-Year of publication : ' . $approved_preference_data->year . '
+Display solution on website : ' . $solution_display . '
 
-Your book is now available at following link to download.
+Solution Provided By : ' . $solution_provider_user . '
 
-http://scilab.in/textbook_run/' . $approved_preference_data->id . '
+List of experiments : ' . $experiment_list . '
 
-Now you should be able to propose a new book...
+Your Lab solution is now available at following link to download.
+
+http://scilab.in/lab_migration_run/' . $proposal_data->id . '
+
+Now you should be able to propose a new Lab migration...
 
 Best Wishes,
 
@@ -310,27 +362,6 @@ Dear !user_name,
 
 You have uploaded following dependency files :
     ' . $dependency_files . '
-
-Best Wishes,
-
-!site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
-      break;
-
-    case 'feedback_received':
-      $user_data = user_load($params['feedback_received']['user_id']);
-
-      $message['subject'] = t('[!site_name] We have received your feedback', array('!site_name' => variable_get('site_name', '')), $language->language);
-      $message['body'] = t('
-Dear !user_name,
-
-We have received your following feedback
-
-Title of the Book: ' . $params['feedback_received']['book_title'] . '
-Title of the Chapter: ' . $params['feedback_received']['chapter_number'] . ' ' . $params['feedback_received']['chapter_title'] . '
-Example No.: ' . $params['feedback_received']['example_no'] . '
-
-Your feedback :
-' . $params['feedback_received']['feedback'] . '
 
 Best Wishes,
 
