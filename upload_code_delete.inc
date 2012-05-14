@@ -52,10 +52,10 @@ function upload_code_delete()
 
     /* sending email */
     $email_to = $user->mail . ', ' . variable_get('lab_migration_emails', '');
-    $param['solution_deleted_user']['book_title'] = $proposal_data->lab_title;
-    $param['solution_deleted_user']['chapter_title'] = $experiment_data->title;
-    $param['solution_deleted_user']['example_number'] = $solution_data->number;
-    $param['solution_deleted_user']['example_caption'] = $solution_data->caption;
+    $param['solution_deleted_user']['lab_title'] = $proposal_data->lab_title;
+    $param['solution_deleted_user']['experiment_title'] = $experiment_data->title;
+    $param['solution_deleted_user']['solution_number'] = $solution_data->code_number;
+    $param['solution_deleted_user']['solution_caption'] = $solution_data->caption;
     $param['example_deleted_user']['user_id'] = $user->uid;
 
     if (!drupal_mail('lab_migration', 'solution_deleted_user', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))

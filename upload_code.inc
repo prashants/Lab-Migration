@@ -14,7 +14,7 @@ function list_experiments()
   $return_html = '<br />';
   $return_html .= '<strong>Title of the Lab:</strong><br />' . $proposal_data->lab_title . '<br /><br />';
   $return_html .= '<strong>Proposer Name:</strong><br />' . $proposal_data->name_title . ' ' . $proposal_data->name . '<br /><br />';
-  $return_html .= l('Upload Example Code', 'lab_migration/code/upload') . '<br />';
+  $return_html .= l('Upload Solution', 'lab_migration/code/upload') . '<br />';
 
   /* get experiment list */
   $experiment_rows = array();
@@ -79,7 +79,7 @@ function upload_code_form($form_state)
       return;
   }
 
-  /* add javascript for automatic book title, check if example uploaded, dependency selection effects */
+  /* add javascript for dependency selection effects */
   $dep_selection_js = " $(document).ready(function() {
     $('#edit-existing-depfile-dep-lab-title').change(function() {
       var dep_selected = ''; 
@@ -328,7 +328,7 @@ function upload_code_form_validate($form, &$form_state)
     }
   }
 
-  /* add javascript again for automatic book title, check if example uploaded, dependency selection effects */
+  /* add javascript dependency selection effects */
   $dep_selection_js = " $(document).ready(function() {
     $('#edit-existing-depfile-dep-lab-title').change(function() {
       var dep_selected = ''; 
@@ -480,11 +480,11 @@ function upload_code_form_submit($form, &$form_state) {
       }
     }
   }
-  drupal_set_message('Example uploaded successfully.', 'status');
+  drupal_set_message('Solution uploaded successfully.', 'status');
 
   /* sending email */
   $email_to = $user->mail . ', ' . variable_get('lab_migration_emails', '');
-  $param['solution_uploaded']['solution_id'] = $example_id;
+  $param['solution_uploaded']['solution_id'] = $solution_id;
   $param['solution_uploaded']['user_id'] = $user->uid;
   if (!drupal_mail('lab_migration', 'solution_uploaded', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
     drupal_set_message('Error sending email message.', 'error');

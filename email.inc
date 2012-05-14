@@ -234,118 +234,78 @@ Best Wishes,
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
-    case 'example_uploaded':
-      $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE id = %d LIMIT 1", $params['example_uploaded']['example_id']);
-      $example_data = db_fetch_object($example_q);
-      $user_data = user_load($params['example_uploaded']['user_id']);
+    case 'solution_uploaded':
+      $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE id = %d LIMIT 1", $params['solution_uploaded']['solution_id']);
+      $solution_data = db_fetch_object($solution_q);
+      $user_data = user_load($params['solution_uploaded']['user_id']);
 
-      $message['subject'] = t('[!site_name] You have uploaded example', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] You have uploaded solution', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-You have uploaded the following example:
+You have uploaded the following solution:
 
-Example number : ' . $example_data->number . '
-Caption : ' .  $example_data->caption . '
+Example number : ' . $solution_data->code_number . '
+Caption : ' .  $solution_data->caption . '
 
-The example is under review. You will be notified when it has been approved.
+The solution is under review. You will be notified when it has been approved.
 
 Best Wishes,
 
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
-    case 'example_updated':
-      $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE id = %d LIMIT 1", $params['example_updated']['example_id']);
-      $example_data = db_fetch_object($example_q);
-      $user_data = user_load($params['example_updated']['user_id']);
+    case 'solution_approved':
+      $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE id = %d LIMIT 1", $params['solution_approved']['solution_id']);
+      $solution_data = db_fetch_object($solution_q);
+      $user_data = user_load($params['solution_approved']['user_id']);
 
-      $message['subject'] = t('[!site_name] You have updated example', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Your uploaded solution has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-You have updated the following example:
+Your following solution has been approved:
 
-Example number : ' . $example_data->number . '
-Caption : ' .  $example_data->caption . '
-
-The example is still under review. You will be notified when it has been approved.
+Solution number : ' . $solution_data->code_number . '
+Caption : ' .  $solution_data->caption . '
 
 Best Wishes,
 
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
-    case 'example_updated_admin':
-      $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE id = %d LIMIT 1", $params['example_updated_admin']['example_id']);
-      $example_data = db_fetch_object($example_q);
-      $user_data = user_load($params['example_updated_admin']['user_id']);
+    case 'solution_disapproved':
+      $user_data = user_load($params['solution_disapproved']['user_id']);
 
-      $message['subject'] = t('[!site_name] Reviewer have updated example', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] Your uploaded solution has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Reviewer have updated the following example:
+Your following solution has been disapproved:
 
-Example number : ' . $example_data->number . '
-Caption : ' .  $example_data->caption . '
+Solution number : ' . $params['solution_disapproved']['solution_number'] . '
+Caption : ' . $params['solution_disapproved']['solution_caption'] . '
+
+Reason for dis-approval : ' . $params['solution_disapproved']['message'] . '
 
 Best Wishes,
 
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
-    case 'example_approved':
-      $example_q = db_query("SELECT * FROM {lab_migration_example} WHERE id = %d LIMIT 1", $params['example_approved']['example_id']);
-      $example_data = db_fetch_object($example_q);
-      $user_data = user_load($params['example_approved']['user_id']);
+    case 'solution_deleted_user':
+      $user_data = user_load($params['solution_deleted_user']['user_id']);
 
-      $message['subject'] = t('[!site_name] Your uploaded example has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['subject'] = t('[!site_name] User has deleted pending solution', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
 Dear !user_name,
 
-Your following example has been approved:
+Your following pending solution has been deleted :
 
-Example number : ' . $example_data->number . '
-Caption : ' .  $example_data->caption . '
-
-Best Wishes,
-
-!site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
-      break;
-
-    case 'example_disapproved':
-      $user_data = user_load($params['example_disapproved']['user_id']);
-
-      $message['subject'] = t('[!site_name] Your uploaded example has been disapproved', array('!site_name' => variable_get('site_name', '')), $language->language);
-      $message['body'] = t('
-Dear !user_name,
-
-Your following example has been disapproved:
-
-Example number : ' . $params['example_disapproved']['example_number'] . '
-Caption : ' . $params['example_disapproved']['example_caption'] . '
-
-Reason for dis-approval : ' . $params['example_disapproved']['message'] . '
-
-Best Wishes,
-
-!site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
-      break;
-
-    case 'example_deleted_user':
-      $user_data = user_load($params['example_deleted_user']['user_id']);
-
-      $message['subject'] = t('[!site_name] User has deleted pending example', array('!site_name' => variable_get('site_name', '')), $language->language);
-      $message['body'] = t('
-Dear !user_name,
-
-Your following pending example has been deleted :
-
-Title of the Book : ' . $params['example_deleted_user']['book_title'] . '
-Title of the Chapter : ' . $params['example_deleted_user']['chapter_title'] . '
-Example number : ' . $params['example_deleted_user']['example_number'] . '
-Caption : ' . $params['example_deleted_user']['example_caption'] . '
+Title of the Lab : ' . $params['solution_deleted_user']['lab_title'] . '
+Title of the Experiment : ' . $params['solution_deleted_user']['experiment_title'] . '
+Solution number : ' . $params['solution_deleted_user']['solution_number'] . '
+Caption : ' . $params['solution_deleted_user']['solution_caption'] . '
 
 Best Wishes,
 
