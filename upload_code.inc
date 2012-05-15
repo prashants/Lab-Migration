@@ -274,7 +274,7 @@ function upload_code_form($form_state)
 function upload_code_form_validate($form, &$form_state)
 {
   if (!check_code_number($form_state['values']['code_number']))
-    form_set_error('code_number', t('Invalid Code Number. Code Number can contain only number dot number.'));
+    form_set_error('code_number', t('Invalid Code Number. Code Number can contain only numbers.'));
 
   if (!check_name($form_state['values']['code_caption']))
     form_set_error('code_caption', t('Caption can contain only alphabets, numbers and spaces.'));
@@ -384,7 +384,7 @@ function upload_code_form_submit($form, &$form_state) {
     mkdir($root_path . $dest_path);
 
   /*  get solution details - dont allow if already solution present */
-  $cur_solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d AND code_number = '%s'", $experiment_id, $form_state['values']['code_number']);
+  $cur_solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d AND code_number = '%s'", $experiment_id, $experiment_data->number . '.' . $form_state['values']['code_number']);
   if ($cur_solution_d = db_fetch_object($cur_solution_q))
   {
     if ($cur_solution_d->approval_status == 1)
@@ -409,7 +409,7 @@ function upload_code_form_submit($form, &$form_state) {
     mkdir($root_path . $dest_path);
 
   /* creating code directories */
-  $dest_path .= 'CODE' . $form_state['values']['code_number'] . '/';
+  $dest_path .= 'CODE' . $experiment_data->number . '.' . $form_state['values']['code_number'] . '/';
   if (!is_dir($root_path . $dest_path))
     mkdir($root_path . $dest_path);
 
@@ -417,7 +417,7 @@ function upload_code_form_submit($form, &$form_state) {
   db_query("INSERT INTO {lab_migration_solution} (experiment_id, approver_uid, code_number, caption, approval_date, approval_status, timestamp) VALUES (%d, %d, '%s', '%s', %d, %d, %d)",
     $experiment_id,
     0,
-    $form_state['values']['code_number'],
+    $experiment_data->number . '.' . $form_state['values']['code_number'],
     $form_state['values']['code_caption'],
     0,
     0,

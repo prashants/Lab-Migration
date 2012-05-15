@@ -290,7 +290,7 @@ function bulk_approval_form_submit($form, &$form_state)
 
         /* email */
         $email_subject = t('Your uploaded solutions have been approved');
-        $email_body = t('Your all the uploaded solutions for the lab have been approved.');
+        $email_body = t('Your all the uploaded solutions for the Lab have been approved.');
 
       } else if ($form_state['values']['run']['unapprove_lab'] == "1") {
 
@@ -304,7 +304,7 @@ function bulk_approval_form_submit($form, &$form_state)
 
         /* email */
         $email_subject = t('Your uploaded solutions have been marked as pending');
-        $email_body = t('Your all the uploaded solutions for the lab have been marked as pending to be review. You will be able to see the solutions after they have been approved by one of our reviewers.');
+        $email_body = t('Your all the uploaded solutions for the Lab have been marked as pending to be review. You will be able to see the solutions after they have been approved by one of our reviewers.');
 
       } else if ($form_state['values']['run']['disapprove_lab'] == "1") {
 
@@ -362,10 +362,11 @@ Reason for dis-approval:
             drupal_set_message(t("Lab directory not present : " . $dir_path . ". Skipping deleting lab directory."), 'status');
           }
 
-          /* deleting proposal */
+          /* deleting full proposal */
           $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $form_state['values']['run']['lab']);
           $proposal_data = db_fetch_object($proposal_q);
           $proposal_id = $proposal_data->id;
+          db_query("DELETE FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
           db_query("DELETE FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
 
           drupal_set_message(t('Deleted Lab Proposal.'), 'status');

@@ -95,7 +95,7 @@ function delete_experiment($experiment_id)
   $status = TRUE;
   $root_path = lab_migration_path();
 
-  $experiment_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE id = %d", $experiment_id);
+  $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE id = %d", $experiment_id);
   $experiment_data = db_fetch_object($experiment_q);
   if (!$experiment_data)
   {
@@ -154,7 +154,7 @@ function delete_lab($lab_id)
   }
 
   /* delete experiments */
-  $experiment_q = db_query("SELECT * FROM {lab_migration_chapter} WHERE proposal_id = %d", $proposal_data->id);
+  $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
   {
     if (!delete_experiment($experiment_data->id))
