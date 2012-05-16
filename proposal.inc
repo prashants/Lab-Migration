@@ -11,7 +11,6 @@
 	0 - Pending
 	1 - Approved
 	2 - Dis-Approved
-	3 - Completed
   Solution Display :
   0 - No
   1 - Yes

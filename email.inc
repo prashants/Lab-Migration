@@ -234,6 +234,53 @@ Best Wishes,
 !site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
       break;
 
+    case 'solution_proposal_received':
+
+      /* initializing data */
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['solution_proposal_received']['proposal_id']);
+      $proposal_data = db_fetch_object($proposal_q);
+
+      if ($proposal_data->solution_display == 1) {
+      	$solution_display = 'Yes';
+      } else {
+      	$solution_display = 'No';
+      }
+
+      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['solution_proposal_received']['proposal_id'], 1);
+      $experiment_list = '
+      	';
+      while ($experiment_data = db_fetch_object($experiment_q)) {
+      	$experiment_list .= $experiment_data->number . ' ' . $experiment_data->title . '
+      	';
+      }
+
+      $user_data = user_load($params['solution_proposal_received']['user_id']);
+ 
+      $message['subject'] = t('[!site_name] Your Lab migration solution proposal has been received', array('!site_name' => variable_get('site_name', '')), $language->language);
+      $message['body'] = t('
+Dear !user_name,
+
+We have received your proposal for solution for following Lab migration :
+
+Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
+Email : ' . $user_data->mail . '
+Contact Phone : ' . $proposal_data->contact_ph . '
+Department/Branch : ' . $proposal_data->department . '
+University/Institute : ' . $proposal_data->university . '
+
+Display solution on website : ' . $solution_display . '
+
+Solution Provided By : ' . $solution_provider_user . '
+
+List of experiments : ' . $experiment_list . '
+
+Your proposal is under review and you will soon receive an email from us regarding the same.
+
+Best Wishes,
+
+!site_name', array('!site_name' => variable_get('site_name', ''), '!user_name' => $user_data->name), $language->language);
+      break;
+
     case 'solution_uploaded':
       $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE id = %d LIMIT 1", $params['solution_uploaded']['solution_id']);
       $solution_data = db_fetch_object($solution_q);

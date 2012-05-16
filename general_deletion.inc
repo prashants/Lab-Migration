@@ -105,10 +105,17 @@ function delete_experiment($experiment_id)
 
   /* deleting solutions */
   $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d", $experiment_id);
+  $delete_exp_folder = FALSE;
   while ($solution_data = db_fetch_object($solution_q))
   {
+  	$delete_exp_folder = TRUE;
     if (!delete_solution($solution_data->id))
       $status = FALSE;
+  }
+
+  if (!$delete_exp_folder)
+  {
+  	return TRUE;
   }
 
   if ($status)

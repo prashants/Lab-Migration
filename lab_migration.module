@@ -12,6 +12,7 @@ function lab_migration_menu()
 {
   $items = array();
 
+  /* PROPOSAL */
   $items['lab_migration/proposal'] = array(
     'title' => 'Lab Migration Proposal',
     'description' => 'Lab Migration Proposal', 
@@ -21,8 +22,6 @@ function lab_migration_menu()
     'type' => MENU_NORMAL_ITEM,
     'file' => 'proposal.inc',
   );
-
-  /* PROPOSAL */
   $items['lab_migration/manage_proposal'] = array(
     'title' => 'Manage Lab Migration',
     'description' => 'Manage Lab Migration Proposals',
@@ -41,6 +40,16 @@ function lab_migration_menu()
     'weight' => 1,
     'file' => 'manage_proposal.inc',
   );
+  $items['lab_migration/manage_proposal/pending_solution_proposal'] = array(
+    'title' => 'Pending Solution Proposals',
+    'description' => 'Pending Lab Migration Solution Proposals Queue',
+    'page callback' => 'solution_proposal_pending',
+    'access callback' => 'user_access',
+    'access arguments' => array('manage proposal'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 2,
+    'file' => 'manage_solution_proposal.inc',
+  );
   $items['lab_migration/manage_proposal/pending_solution'] = array(
     'title' => 'Pending Solution',
     'description' => 'Pending Lab Migration Solution',
@@ -48,7 +57,7 @@ function lab_migration_menu()
     'access callback' => 'user_access',
     'access arguments' => array('manage proposal'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 2,
+    'weight' => 3,
     'file' => 'manage_proposal.inc',
   );
   $items['lab_migration/manage_proposal/all'] = array(
@@ -58,7 +67,7 @@ function lab_migration_menu()
     'access callback' => 'user_access',
     'access arguments' => array('manage proposal'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 3,
+    'weight' => 4,
     'file' => 'manage_proposal.inc',
   );
   $items['lab_migration/manage_proposal/category'] = array(
@@ -68,7 +77,7 @@ function lab_migration_menu()
     'access callback' => 'user_access',
     'access arguments' => array('manage proposal'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 4,
+    'weight' => 5,
     'file' => 'manage_proposal.inc',
   );
   $items['lab_migration/manage_proposal/category/edit'] = array(
@@ -89,6 +98,15 @@ function lab_migration_menu()
     'type' => MENU_CALLBACK,
     'file' => 'manage_proposal.inc',
   );
+  $items['lab_migration/manage_proposal/solution_proposal_approve'] = array(
+    'title' => 'Approve Solution Proposal',
+    'description' => 'Approve Solution Proposal',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('solution_proposal_approval_form'),
+    'access arguments' => array('manage proposal'),
+    'type' => MENU_CALLBACK,
+    'file' => 'manage_solution_proposal.inc',
+  );
   $items['lab_migration/manage_proposal/edit'] = array(
     'title' => 'Edit Proposal',
     'description' => 'Edit Proposal',
@@ -106,6 +124,24 @@ function lab_migration_menu()
     'access arguments' => array('approve proposal'),
     'type' => MENU_CALLBACK,
     'file' => 'manage_proposal.inc',
+  );
+
+  /* SOLUTION PROPOSAL */
+  $items['lab_migration/open_proposal'] = array(
+    'title' => 'Lab Migration Solve',
+    'description' => 'Lab Migration Proposal Open For Solution',
+    'page callback' => 'lab_migration_proposal_open',
+    'access arguments' => array('propose solution'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'solution_proposal.inc',
+  );
+  $items['lab_migration/show_proposal'] = array(
+    'title' => 'Lab Migration Proposal',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lab_migration_proposal_display'),
+    'access arguments' => array('view proposal'),
+    'type' => MENU_CALLBACK,
+    'file' => 'solution_proposal.inc',
   );
 
   /* CODE REVIEW */
@@ -156,17 +192,6 @@ function lab_migration_menu()
     'type' => MENU_CALLBACK,
     'weight' => 4,
     'file' => 'notes.inc',
-  );
-
-  /* ADMIN SETTINGS */
-  $items['admin/settings/lab_migration'] = array(
-    'title' => 'Lab Migration Settings',
-    'description' => 'Lab Migration Settings', 
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('lab_migration_settings_form'),
-    'access arguments' => array('administer lab migration'),
-    'type' => MENU_NORMAL_ITEM,
-    'file' => 'settings.inc',
   );
 
   /* CODE UPLOAD */
@@ -283,7 +308,17 @@ function lab_migration_menu()
     'file' => 'full_download.inc',
   );
 
-  /* latex script for lab generation */
+  /* DOWNLOAD FOR EVERYONE */
+  $items['lab_migration_run'] = array(
+    'title' => 'Download Codes',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('lab_migration_run_form'),
+    'access arguments' => array('access content'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'run.inc',
+  );
+
+  /* LATEX SCRIPT */
   $items['lab_migration/generate_lab'] = array(
     'title' => 'Generate Lab',
     'description' => 'Generate Lab From Latex Script', 
@@ -301,14 +336,15 @@ function lab_migration_menu()
     'file' => 'latex.inc',
   );
 
-  /* DOWNLOAD FOR EVERYONE */
-  $items['lab_migration_run'] = array(
-    'title' => 'Download Codes',
+  /* ADMIN SETTINGS */
+  $items['admin/settings/lab_migration'] = array(
+    'title' => 'Lab Migration Settings',
+    'description' => 'Lab Migration Settings',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('lab_migration_run_form'),
-    'access arguments' => array('access content'),
+    'page arguments' => array('lab_migration_settings_form'),
+    'access arguments' => array('administer lab migration'),
     'type' => MENU_NORMAL_ITEM,
-    'file' => 'run.inc',
+    'file' => 'settings.inc',
   );
 
   return $items;
@@ -318,7 +354,7 @@ function lab_migration_menu()
  * Implementation of hook_perm().
  */
 function lab_migration_perm() {
-  return array('create proposal', 'approve proposal', 'approve code', 'upload code', 'edit uploaded code', 'download code', 'create feedback', 'bulk manage code', 'bulk delete code', 'edit proposal', 'administer lab migration', 'generate lab');
+  return array('create proposal', 'manage proposal', 'edit proposal', 'approve proposal', 'propose solution', 'view proposal', 'approve code', 'bulk manage code', 'bulk delete code', 'upload code', 'edit uploaded code', 'download code', 'access content', 'administer lab migration', 'generate lab');
 }
 
 /* AJAX CALLS */

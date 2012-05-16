@@ -665,8 +665,13 @@ function proposal_edit_form_validate($form, &$form_state)
   $proposal_id = (int)arg(3);
 
   if ($form_state['values']['solution_provider_uid'] == 3) {
-  	if (!user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])))) {
+  	$solution_provider_data = user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])));
+  	if (!$solution_provider_data) {
   		form_set_error('solution_provider_user_name', t('Solution provider user name does not exists'));
+  	}
+  	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2)", $solution_provider_data->uid);
+  	if (db_fetch_object($solution_provider_q)) {
+  		form_set_error('solution_provider_user_name', t('Solution provider has already one proposal active'));
   	}
   }
 
