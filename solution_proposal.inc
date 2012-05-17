@@ -18,7 +18,7 @@ function lab_migration_proposal_open()
   return $return_html;
 }
 
-function lab_migration_proposal_display($form_state)
+function lab_migration_solution_proposal_form($form_state)
 {
   global $user;
 
@@ -81,7 +81,18 @@ function lab_migration_proposal_display($form_state)
   return $form;
 }
 
-function lab_migration_proposal_display_submit($form_state, &$form_state)
+function lab_migration_solution_proposal_form_validate($form_state, &$form_state)
+{
+	global $user;
+
+	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2) AND solution_status IN (0, 1)", $user->uid);
+	if (db_fetch_object($solution_provider_q)) {
+    form_set_error('', t("You have already applied for a solution. Please compelete that before applying for another solution."));
+    drupal_goto('lab_migration/open_proposal');
+	}
+}
+
+function lab_migration_solution_proposal_form_submit($form_state, &$form_state)
 {
   global $user;
 
@@ -99,13 +110,7 @@ function lab_migration_proposal_display_submit($form_state, &$form_state)
     drupal_goto('lab_migration/open_proposal');
   }
 
-	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2) AND solution_status IN (0, 1)", $user->uid);
-	if (db_fetch_object($solution_provider_q)) {
-    drupal_set_message("You have already applied for a solution. Please compelete that before applying for another solution.", 'error');
-    drupal_goto('lab_migration/open_proposal');
-	}
-
-  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 0 WHERE id = %d", $user->uid, $proposal_id);
+  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 1 WHERE id = %d", $user->uid, $proposal_id);
 	drupal_set_message("We have received your application. We will get back to you soon.", 'status');
 
   /* sending email */

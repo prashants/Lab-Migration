@@ -138,7 +138,7 @@ function lab_migration_menu()
   $items['lab_migration/show_proposal'] = array(
     'title' => 'Lab Migration Proposal',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('lab_migration_proposal_display'),
+    'page arguments' => array('lab_migration_solution_proposal_form'),
     'access arguments' => array('view proposal'),
     'type' => MENU_CALLBACK,
     'file' => 'solution_proposal.inc',

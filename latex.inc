@@ -97,8 +97,9 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
       while ($solution_files_data = db_fetch_object($solution_files_q))
       {
         $latex_filedata .= $experiment_data->number . $sep;
-        $latex_filedata .= $experiment_data->name . $sep;
-        $latex_filedata .= $solution_data->number . $sep;
+        $latex_filedata .= $experiment_data->title . $sep;
+        $latex_filedata .= $solution_data->code_number . $sep;
+        $latex_filedata .= $solution_data->caption . $sep;
         $latex_filedata .= $solution_files_data->filename . $sep;
         $latex_filedata .= $solution_files_data->filepath . $sep;
         $latex_filedata .= $solution_files_data->filetype . $sep;
@@ -113,8 +114,8 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
         if ($dependency_data = db_fetch_object($dependency_q))
         {
           $latex_filedata .= $experiment_data->number . $sep;
-          $latex_filedata .= $experiment_data->name . $sep;
-          $latex_filedata .= $solution_data->number . $sep;
+          $latex_filedata .= $experiment_data->title . $sep;
+          $latex_filedata .= $solution_data->code_number . $sep;
           $latex_filedata .= $solution_data->caption . $sep;
           $latex_filedata .= $dependency_data->filename . $sep;
           $latex_filedata .= $dependency_data->filepath . $sep;
