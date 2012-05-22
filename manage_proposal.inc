@@ -272,7 +272,7 @@ function proposal_approval_form_submit($form, &$form_state)
     drupal_goto('lab_migration/manage_proposal');
     return;
   } else if ($form_state['values']['approval'] == 2) {
-    db_query("UPDATE {lab_migration_proposal} SET approver_uid = %d, approval_date = %d, approval_status = 2, message = '%s' WHERE id = %d", $user->uid, time(), $form_state['values']['message'], $proposal_id);
+    db_query("UPDATE {lab_migration_proposal} SET approver_uid = %d, approval_date = %d, approval_status = 2, message = '%s', solution_provider_uid = 0, solution_status = 0 WHERE id = %d", $user->uid, time(), $form_state['values']['message'], $proposal_id);
 
     /* sending email */
     $user_data = user_load($proposal_data->uid);
@@ -613,27 +613,26 @@ function proposal_edit_form($form_state)
 	}
 
 	if ($proposal_data->solution_provider_uid == 0) {
-		$solution_provider_user = 1;
+		$solution_provider_user = 'Open';
 	} else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
-		$solution_provider_user = 2;
+		$solution_provider_user = 'Proposer';
 	} else {
-		$solution_provider_user = 3;
 		$user_data = user_load($proposal_data->solution_provider_uid);
 		if (!$user_data) {
 			$solution_provider_user = 1;
 			drupal_set_message('Solution provider user name is invalid', 'error');
 		}
+		$solution_provider_user = $user_data->name;
 	}
   $form['solution_provider_uid'] = array(
-	  '#type' => 'radios',
+	  '#type' => 'item',
 		'#title' => t('Who will provide the solution'),
-		'#options' => array('1' => 'Open', '2' => 'Proposer', '3' => 'User name mentioned below'),
-		'#required' => TRUE,
-		'#default_value' => $solution_provider_user,
+		'#value' => $solution_provider_user,
   );
-  $form['solution_provider_user_name'] = array(
-	  '#type' => 'textfield',
-		'#default_value' => ($solution_provider_user == 3) ? $user_data->name : "",
+
+  $form['open_solution'] = array(
+	  '#type' => 'checkbox',
+		'#title' => t('Open the solution for everyone'),
   );
 
   $form['solution_display'] = array(
@@ -663,17 +662,6 @@ function proposal_edit_form($form_state)
 function proposal_edit_form_validate($form, &$form_state)
 {
   $proposal_id = (int)arg(3);
-
-  if ($form_state['values']['solution_provider_uid'] == 3) {
-  	$solution_provider_data = user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])));
-  	if (!$solution_provider_data) {
-  		form_set_error('solution_provider_user_name', t('Solution provider user name does not exists'));
-  	}
-  	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2)", $solution_provider_data->uid);
-  	if (db_fetch_object($solution_provider_q)) {
-  		form_set_error('solution_provider_user_name', t('Solution provider has already one proposal active'));
-  	}
-  }
 
   /* check before delete proposal */
   if ($form_state['values']['delete_proposal'] == 1) {
@@ -720,14 +708,8 @@ function proposal_edit_form_submit($form, &$form_state)
 		return;
   }
 
-  $solution_provider_uid = 0;
-  if ($form_state['values']['solution_provider_uid'] == 1) {
-  	$solution_provider_uid = 0;
-  } else if ($form_state['values']['solution_provider_uid'] == 2) {
-  	$solution_provider_uid = $proposal_data->uid;
-  } else if ($form_state['values']['solution_provider_uid'] == 3) {
-  	$user_data = user_load(array('name' => check_plain($form_state['values']['solution_provider_user_name'])));
-  	$solution_provider_uid = (int)$user_data->uid;
+  if ($form_state['values']['solution_display'] == 1) {
+		db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = %d, solution_status = %d, solution_provider_name_title = '', 	solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department 	= '', solution_provider_university = '' WHERE id = %d", 0, 0, $proposal_id);
   }
 
   $solution_display = 0;

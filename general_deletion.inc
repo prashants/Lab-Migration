@@ -220,3 +220,47 @@ function del_lab_pdf($lab_id)
     unlink($dir_path . $pdf_filename);
 }
 
+
+function delete_dependency($dependency_id)
+{
+  global $user;
+  $root_path = lab_migration_path();
+  $status = TRUE;
+
+  $dependency_files_q = db_query("SELECT * FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_id);
+  $dependency_files_data = db_fetch_object($dependency_files_q);
+  if (!$dependency_files_data)
+  {
+    drupal_set_message(t('Invalid dependency.'), 'error');
+    return FALSE;
+  }
+
+	if (!file_exists($root_path . $dependency_files_data->filepath))
+	{
+		drupal_set_message(t('Error deleting !file. File does not exists.', array('!file' => $dependency_files_data->filepath)), 'error');
+    return FALSE;
+	}
+
+	/* removing dependency file */
+	if (!unlink($root_path . $dependency_files_data->filepath))
+	{
+		$status = FALSE;
+		drupal_set_message(t('Error deleting !file', array('!file' => $dependency_files_data->filepath)), 'error');
+
+		/* sending email to admins */
+		$email_to = variable_get('lab_migration_emails', '');
+		$param['standard']['subject'] = "[ERROR] Error deleting dependency file";
+		$param['standard']['body'] = "Error deleting dependency files by " . $user->uid . " at " . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] . " :
+			dependency id : " . $dependency_id . "
+			file id : " .  $dependency_files_data->id . "
+			file path : " . $dependency_files_data->filepath;
+		if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
+			drupal_set_message('Error sending email message.', 'error');
+	} else {
+		/* deleting dependency files database entries */
+		db_query("DELETE FROM {lab_migration_dependency_files} WHERE id = %d", $dependency_id);
+	}
+
+  return $status;
+}
+

@@ -148,10 +148,23 @@ function lab_migration_proposal_form_submit($form, &$form_state)
   }
 
   $solution_provider_uid = 0;
-  if ($form_state['values']['solution_provider_uid'] == "1")
+  $solution_status = 0;
+  $solution_provider_name_title = '';
+  $solution_provider_name = '';
+  $solution_provider_contact_ph = '';
+  $solution_provider_department = '';
+  $solution_provider_university = '';
+  if ($form_state['values']['solution_provider_uid'] == "1") {
   	$solution_provider_uid = $user->uid;
-  else
+  	$solution_status = 1;
+		$solution_provider_name_title = $form_state['values']['name_title'];
+		$solution_provider_name = $form_state['values']['name'];
+		$solution_provider_contact_ph = $form_state['values']['contact_ph'];
+		$solution_provider_department = $form_state['values']['department'];
+		$solution_provider_university = $form_state['values']['university'];
+  } else {
   	$solution_provider_uid = 0;
+  }
 
   $solution_display = 0;
   if ($form_state['values']['solution_display'] == "1")
@@ -161,8 +174,8 @@ function lab_migration_proposal_form_submit($form, &$form_state)
 
   /* inserting the user proposal */
   $result = db_query("INSERT INTO {lab_migration_proposal} 
-    (uid, approver_uid, name_title, name, contact_ph, department, university, lab_title, approval_status, solution_status, solution_provider_uid, solution_display, creation_date, approval_date, solution_date) VALUES
-    (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, 0, 0)",
+    (uid, approver_uid, name_title, name, contact_ph, department, university, lab_title, approval_status, solution_status, solution_provider_uid, solution_display, creation_date, approval_date, solution_date, solution_provider_name_title, solution_provider_name, solution_provider_contact_ph, solution_provider_department, solution_provider_university) VALUES
+    (%d, %d, '%s', '%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, 0, 0, '%s', '%s', '%s', '%s', '%s')",
     $user->uid,
     0,
     $form_state['values']['name_title'],
@@ -172,10 +185,15 @@ function lab_migration_proposal_form_submit($form, &$form_state)
     $form_state['values']['university'],
     $form_state['values']['lab_title'],
     0,
-    0,
+    $solution_status,
     $solution_provider_uid,
     $solution_display,
-    time()
+    time(),
+    $solution_provider_name_title,
+    $solution_provider_name,
+    $solution_provider_contact_ph,
+    $solution_provider_department,
+    $solution_provider_university
   );
   if (!$result)
   {

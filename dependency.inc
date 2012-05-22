@@ -20,8 +20,8 @@ function upload_dependency_form($form_state)
   );
   $form['name'] = array(
     '#type' => 'item',
-    '#value' => $proposal_data->name,
-    '#title' => t('Contributor Name'),
+    '#value' => $proposal_data->name_title . ' ' . $proposal_data->name,
+    '#title' => t('Proposer Name'),
   );
 
   $form['existing_depfile'] = array(
@@ -76,6 +76,9 @@ function upload_dependency_form_validate($form, &$form_state)
   {
   	form_set_error('', t('Invalid'));
   }
+
+  if (!check_name($form_state['values']['depfile1_caption']))
+    form_set_error('code_caption', t('Caption can contain only alphabets, numbers and spaces.'));
 
   if (isset($_FILES['files']))
   {

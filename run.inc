@@ -96,12 +96,23 @@ function lab_migration_run_form($form_state)
     if ($lab_details->solution_provider_uid > 0) {
     	$user_solution_provider = user_load($lab_details->solution_provider_uid);
     	if ($user_solution_provider) {
-    		$solution_provider = '<li><strong>Solution Provider: </strong>' . l($user_solution_provider->name, 'user/' . $lab_details->solution_provider_uid) . '</li>';
+    		$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
+      						'<ul>' .
+                  '<li><strong>Solution Provider Name:</strong> ' . $lab_details->solution_provider_name_title . ' ' . $lab_details->solution_provider_name . '</li>' .
+                  '<li><strong>Department:</strong> ' . $lab_details->solution_provider_department . '</li>' .
+                  '<li><strong>University:</strong> ' . $lab_details->solution_provider_university . '</li>' .
+                  '</ul>';
     	} else {
-    		$solution_provider = '<li><strong>Solution Provider: </strong> (Open) </li>';
+    		$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
+      						'<ul>' .
+      						'<li><strong>Solution Provider: </strong> (Open) </li>' .
+      						'</ul>';
     	}
     } else {
-    	$solution_provider = '<li><strong>Solution Provider: </strong> (Open) </li>';
+    	$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
+      						'<ul>' .
+      						'<li><strong>Solution Provider: </strong> (Open) </li>' .
+      						'</ul>';
     }
 
     $category_data = get_category_name($lab_details->category);
@@ -115,8 +126,8 @@ function lab_migration_run_form($form_state)
                   '<li><strong>Department:</strong> ' . $lab_details->department . '</li>' .
                   '<li><strong>University:</strong> ' . $lab_details->university . '</li>' .
                   '<li><strong>Category:</strong> ' .  $category_data . '</li>' .
-                  $solution_provider .
-                  '</ul>',
+                  '</ul>' .
+                  $solution_provider,
     );
 
     $form['run']['download_lab'] = array(

@@ -11,8 +11,7 @@ function list_experiments()
       return;
   }
 
-  $return_html = '<br />';
-  $return_html .= '<strong>Title of the Lab:</strong><br />' . $proposal_data->lab_title . '<br /><br />';
+  $return_html = '<strong>Title of the Lab:</strong><br />' . $proposal_data->lab_title . '<br /><br />';
   $return_html .= '<strong>Proposer Name:</strong><br />' . $proposal_data->name_title . ' ' . $proposal_data->name . '<br /><br />';
   $return_html .= l('Upload Solution', 'lab_migration/code/upload') . '<br />';
 
@@ -114,8 +113,8 @@ function upload_code_form($form_state)
   );
   $form['name'] = array(
     '#type' => 'item',
-    '#value' => $proposal_data->name,
-    '#title' => t('Contributor Name'),
+    '#value' => $proposal_data->name_title . ' ' . $proposal_data->name,
+    '#title' => t('Proposer Name'),
   );
 
   /* get experiment list */
@@ -323,7 +322,7 @@ function upload_code_form_validate($form, &$form_state)
 
         /* check if valid file name */
         if (!lab_migration_check_valid_filename($_FILES['files']['name'][$file_form_name]))
-         form_set_error($file_form_name, t('Invalid file name specified. Only alphabets, numbers and underscore is allowed as a valid filename.'));
+         form_set_error($file_form_name, t('Invalid file name specified. Only alphabets and numbers are allowed as a valid filename.'));
       }
     }
   }

@@ -3,7 +3,7 @@
 
 function solution_proposal_pending()
 {
-  /* get list of solution proposal where the solution_provider_uid is set to some userid except 0 and solution_status is also 0 */
+  /* get list of solution proposal where the solution_provider_uid is set to some userid except 0 and solution_status is also 1 */
   $pending_rows = array();
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid != 0 AND solution_status = 1 ORDER BY id DESC");
   while ($pending_data = db_fetch_object($pending_q))
@@ -103,15 +103,21 @@ function solution_proposal_approval_form($form_state)
   );
 
   if ($proposal_data->solution_provider_uid == 0) {
-  	$solution_provider = "User will not provide solution, we will have to provide solution";
+  	$solution_provider = "Open";
   } else if ($proposal_data->solution_provider_uid == $proposal_data->uid) {
   	$solution_provider = "Proposer will provide the solution of the lab";
   } else {
   	$solution_provider_user_data = user_load($proposal_data->solution_provider_uid);
-  	if ($solution_provider_user_data)
-  		$solution_provider = l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid);
-  	else
+  	if ($solution_provider_user_data) {
+  		$solution_provider .= '<ul>' .
+  								'<li><strong>Solution Provider:</strong> ' . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid) . '</li>' .
+  								'<li><strong>Solution Provider Name:</strong> ' . $proposal_data->solution_provider_name_title . ' ' . $proposal_data->solution_provider_name . '</li>' .
+                  '<li><strong>Department:</strong> ' . $proposal_data->solution_provider_department . '</li>' .
+                  '<li><strong>University:</strong> ' . $proposal_data->solution_provider_university . '</li>' .
+                  '</ul>';
+  	} else {
   		$solution_provider = "User does not exists";
+  	}
   }
   $form['solution_provider_uid'] = array(
 	  '#type' => 'item',
@@ -200,7 +206,7 @@ function solution_proposal_approval_form_submit($form, &$form_state)
     drupal_goto('lab_migration/manage_proposal/pending_solution_proposal');
     return;
   } else if ($form_state['values']['approval'] == 2) {
-    db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = 0, solution_status = 0 WHERE id = %d", $proposal_id);
+    db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = 0, solution_status = 0, solution_provider_name_title = '', solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department = '', solution_provider_university = '' WHERE id = %d", $proposal_id);
 
     /* sending email */
     $email_to = $user_data->mail;

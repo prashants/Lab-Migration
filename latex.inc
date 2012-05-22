@@ -82,7 +82,7 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
   {
     drupal_set_message('Could not fetch solution provider information for the lab specified.', 'error');
   }
-  $solution_provider_filedata .= $solution_provider_user->name . $sep . $solution_provider_user->mail . $eol;
+  $solution_provider_filedata .= $proposal_data->solution_provider_name_title . $sep . $proposal_data->solution_provider_name . $sep . $proposal_data->solution_provider_department . $sep . $proposal_data->solution_provider_university . $eol;
 
   $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number DESC", $proposal_data->id);
   while ($experiment_data = db_fetch_object($experiment_q))
@@ -170,7 +170,7 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
   {
 		/* download zip file */
 		header('Content-Type: application/pdf');
-		header('Content-disposition: attachment; filename="' . $proposal_data->lab . '_' . $proposal_data->author . '.pdf"');
+		header('Content-disposition: attachment; filename="' . $proposal_data->lab_title . '_' . $proposal_data->name_title . '_' . $proposal_data->name . '.pdf"');
 		header('Content-Length: ' . filesize($dir_path . $pdf_filename));
 		readfile($dir_path . $pdf_filename);
 	} else {

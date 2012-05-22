@@ -136,7 +136,7 @@ function lab_migration_menu()
     'file' => 'solution_proposal.inc',
   );
   $items['lab_migration/show_proposal'] = array(
-    'title' => 'Lab Migration Proposal',
+    'title' => 'Lab Migration Solution Proposal',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('lab_migration_solution_proposal_form'),
     'access arguments' => array('view proposal'),
@@ -172,6 +172,16 @@ function lab_migration_menu()
     'type' => MENU_LOCAL_TASK,
     'weight' => 2,
     'file' => 'bulk_approval.inc',
+  );
+  $items['lab_migration/code_approval/dependency'] = array(
+    'title' => 'Dependency',
+    'description' => 'Dependency Mangage',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dependency_approval_form'),
+    'access arguments' => array('bulk manage code'),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 3,
+    'file' => 'dependency_approval.inc',
   );
   $items['lab_migration/code_approval/editcode'] = array(
     'title' => 'Admin Edit Example',
@@ -402,7 +412,7 @@ function lab_migration_ajax()
 /*************************** VALIDATION FUNCTIONS *****************************/
 
 function lab_migration_check_valid_filename($file_name) {
-  if (!preg_match('/^[0-9a-zA-Z\_\.]+$/', $file_name))
+  if (!preg_match('/^[0-9a-zA-Z\.]+$/', $file_name))
     return FALSE;
   else
     if (substr_count($file_name, ".") > 1)
@@ -434,33 +444,30 @@ function lab_migration_path() {
 function get_proposal() {
 	global $user;
 
-  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE uid = %d ORDER BY id DESC LIMIT 1", $user->uid);
+  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND solution_status = 2 ORDER BY id DESC LIMIT 1", $user->uid);
   $proposal_data = db_fetch_object($proposal_q);
   if (!$proposal_data)
   {
-    drupal_set_message("Please submit a " . l('proposal', 'lab_migration/proposal') . ".", 'error');
+    drupal_set_message("You do not have any approved Lab migraion solution proposal. Please check the " . l('available', 'lab_migration/open_proposal') . " Lab migration proposal.", 'error');
     drupal_goto('');
   }
-  if ($proposal_data->proposal_status != 1)
-  {
-    switch ($proposal_data->approval_status)
-    {
-    case 0:
-      drupal_set_message(t('We have already received your proposal. We will get back to you soon.'), 'status');
-      return FALSE;
-    case 1:
-      return $proposal_data;
-    case 2:
-      drupal_set_message(t('Your proposal has been dis-approved. Please create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'error');
-      return FALSE;
-    case 3:
-      drupal_set_message(t('Congratulations! You have completed your last book proposal. You have to create another proposal ' . l('here', 'lab_migration/proposal') . '.'), 'status');
-      return FALSE;
-    default:
-       drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
-       return FALSE;
-    }
-  }
+	switch ($proposal_data->approval_status)
+	{
+	case 0:
+		drupal_set_message(t('Proposal is awaiting approval.'), 'status');
+		return FALSE;
+	case 1:
+		return $proposal_data;
+	case 2:
+		drupal_set_message(t('Proposal has been dis-approved.'), 'error');
+		return FALSE;
+	case 3:
+		drupal_set_message(t('Proposal has been marked as completed.'), 'status');
+		return FALSE;
+	default:
+		 drupal_set_message(t('Invalid proposal state. Please contact site administrator for further information.'), 'error');
+		 return FALSE;
+	}
   return FALSE;
 }
 

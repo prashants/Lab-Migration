@@ -35,27 +35,7 @@ function lab_migration_solution_proposal_form($form_state)
   $form['name'] = array(
     '#type' => 'item',
     '#value' => l($proposal_data->name_title . ' ' . $proposal_data->name, 'user/' . $proposal_data->uid),
-    '#title' => t('Name'),
-  );
-  $form['email_id'] = array(
-    '#type' => 'item',
-    '#value' => user_load($proposal_data->uid)->mail,
-    '#title' => t('Email'),
-  );
-  $form['contact_ph'] = array(
-    '#type' => 'item',
-    '#value' => $proposal_data->contact_ph,
-    '#title' => t('Contact Phone No.'),
-  );
-  $form['department'] = array(
-    '#type' => 'item',
-    '#value' => $proposal_data->department,
-    '#title' => t('Department/Branch'),
-  );
-  $form['university'] = array(
-    '#type' => 'item',
-    '#value' => $proposal_data->university,
-    '#title' => t('University/Institute'),
+    '#title' => t('Proposer Name'),
   );
   $form['lab_title'] = array(
     '#type' => 'item',
@@ -72,6 +52,57 @@ function lab_migration_solution_proposal_form($form_state)
     '#type' => 'item',
     '#value' => $experiment_html,
     '#title' => t('Experiment List'),
+  );
+
+  $form['solution_provider_name_title'] = array(
+    '#type' => 'select',
+    '#title' => t('Title'),
+    '#options' => array('Mr' => 'Mr', 'Ms' => 'Ms', 'Mrs' => 'Mrs', 'Dr' => 'Dr', 'Prof' => 'Prof'),
+    '#required' => TRUE,
+  );
+  $form['solution_provider_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name of the Solution Provider'),
+    '#size' => 30,
+    '#maxlength' => 50,
+    '#required' => TRUE,
+  );
+  $form['solution_provider_email_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Email'),
+    '#size' => 30,
+    '#value' => $user->mail,
+    '#disabled' => TRUE,
+  );
+  $form['solution_provider_contact_ph'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Contact Phone No.'),
+    '#size' => 30,
+    '#maxlength' => 15,
+    '#required' => TRUE,
+  );
+  $form['solution_provider_department'] = array(
+    '#type' => 'select',
+    '#title' => t('Department/Branch'),
+    '#options' => array('' => 'Please select...',
+                        'Computer Engineering' => 'Computer Engineering',
+    										'Electrical Engineering' => 'Electrical Engineering',
+                        'Electronics Engineering' => 'Electronics Engineering',
+                        'Chemical Engineering' => 'Chemical Engineering',
+                        'Instrumentation Engineering' => 'Instrumentation Engineering',
+                        'Mechanical Engineering' => 'Mechanical Engineering',
+                        'Civil Engineering' => 'Civil Engineering',
+                        'Physics' => 'Physics',
+                        'Mathematics' => 'Mathematics',
+                        'Others' => 'Others'),
+    '#required' => TRUE,
+  );
+  $form['solution_provider_university'] = array(
+    '#type' => 'textfield',
+    '#title' => t('University/Institute'),
+    '#size' => 30,
+    '#maxlength' => 50,
+    '#required' => TRUE,
   );
 
   $form['submit'] = array(
@@ -110,7 +141,14 @@ function lab_migration_solution_proposal_form_submit($form_state, &$form_state)
     drupal_goto('lab_migration/open_proposal');
   }
 
-  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 1 WHERE id = %d", $user->uid, $proposal_id);
+  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 1, solution_provider_name_title = '%s', solution_provider_name = '%s', solution_provider_contact_ph = '%s', solution_provider_department = '%s', solution_provider_university = '%s' WHERE id = %d",
+  	$user->uid,
+  	$form_state['values']['solution_provider_name_title'],
+  	$form_state['values']['solution_provider_name'],
+  	$form_state['values']['solution_provider_contact_ph'],
+  	$form_state['values']['solution_provider_department'],
+  	$form_state['values']['solution_provider_university'],
+  	$proposal_id);
 	drupal_set_message("We have received your application. We will get back to you soon.", 'status');
 
   /* sending email */
