@@ -98,6 +98,10 @@ function bulk_approval_form($form_state)
       '#type' => 'item',
       '#value' => l('Notes for Reviewers', '/lab_migration/code_approval/notes/' . $lab_default_value),
     );
+    $form['run']['upload_code'] = array(
+      '#type' => 'item',
+      '#value' => l('Upload Code', '/lab_migration/code_approval/upload/' . $lab_default_value),
+    );
 
     $form['run']['approve_lab'] = array(
       '#type'  => 'checkbox',

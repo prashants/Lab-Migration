@@ -5,10 +5,13 @@ function bulk_upload_code_form($form_state)
 {
   global $user;
 
-  $proposal_data = get_proposal();
-  if (!$proposal_data) {
-      drupal_goto('');
-      return;
+  $proposal_id = (int)arg(3);
+  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
+  $proposal_data = db_fetch_object($proposal_q);
+  if (!$proposal_data)
+  {
+    drupal_set_message("Invalid proposal selected", 'error');
+    drupal_goto('lab_migration/code_approval/bulk');
   }
 
   /* add javascript for dependency selection effects */
@@ -198,7 +201,7 @@ function bulk_upload_code_form($form_state)
 
   $form['cancel'] = array(
     '#type' => 'markup',
-    '#value' => l(t('Cancel'), 'lab_migration/code'),
+    '#value' => l(t('Cancel'), 'lab_migration/code_approval/bulk'),
   );
   return $form;
 }
@@ -292,10 +295,13 @@ function bulk_upload_code_form_submit($form, &$form_state) {
 
   $root_path = lab_migration_path();
 
-  $proposal_data = get_proposal();
-  if (!$proposal_data) {
-      drupal_goto('');
-      return;
+  $proposal_id = (int)arg(3);
+  $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
+  $proposal_data = db_fetch_object($proposal_q);
+  if (!$proposal_data)
+  {
+    drupal_set_message("Invalid proposal selected", 'error');
+    drupal_goto('lab_migration/code_approval/upload/' . $proposal_id);
   }
 
   $proposal_id = $proposal_data->id;
@@ -307,7 +313,7 @@ function bulk_upload_code_form_submit($form, &$form_state) {
   if (!$experiment_data)
   {
     drupal_set_message("Invalid experiment seleted", 'error');
-    drupal_goto('lab_migration/code');
+    drupal_goto('lab_migration/code_approval/upload/' . $proposal_id);
   }
 
   /* create proposal folder if not present */
@@ -322,15 +328,15 @@ function bulk_upload_code_form_submit($form, &$form_state) {
     if ($cur_solution_d->approval_status == 1)
     {
       drupal_set_message(t("Solution already approved. Cannot overwrite it."), 'error');
-      drupal_goto('lab_migration/code');
+      drupal_goto('lab_migration/code_approval/upload/' . $proposal_id);
       return;
     } else if ($cur_solution_d->approval_status == 0) {
       drupal_set_message(t("Solution is under pending review. Delete the solution and reupload it."), 'error');
-      drupal_goto('lab_migration/code');
+      drupal_goto('lab_migration/code_approval/upload/' . $proposal_id);
       return;
     } else {
       drupal_set_message(t("Error uploading solution. Please contact administrator."), 'error');
-      drupal_goto('lab_migration/code');
+      drupal_goto('lab_migration/code_approval/upload/' . $proposal_id);
       return;
     }
   }
@@ -421,7 +427,7 @@ function bulk_upload_code_form_submit($form, &$form_state) {
   if (!drupal_mail('lab_migration', 'solution_uploaded', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
     drupal_set_message('Error sending email message.', 'error');
 
-  drupal_goto('lab_migration/code');
+  drupal_goto('lab_migration/code_approval/bulk/');
 }
 
 /******************************************************************************/

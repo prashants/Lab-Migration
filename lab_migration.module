@@ -183,7 +183,7 @@ function lab_migration_menu()
     'file' => 'dependency_approval.inc',
   );
   $items['lab_migration/code_approval/upload'] = array(
-    'title' => 'Admin Upload',
+    'title' => 'Upload Code',
     'description' => 'Admin Upload',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('bulk_upload_code_form'),
