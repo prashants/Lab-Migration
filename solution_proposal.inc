@@ -116,7 +116,7 @@ function lab_migration_solution_proposal_form_validate($form_state, &$form_state
 {
 	global $user;
 
-	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2) AND solution_status IN (0, 1)", $user->uid);
+	$solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1) AND solution_status IN (0, 1, 2)", $user->uid);
 	if (db_fetch_object($solution_provider_q)) {
     form_set_error('', t("You have already applied for a solution. Please compelete that before applying for another solution."));
     drupal_goto('lab_migration/open_proposal');

@@ -1,7 +1,6 @@
 <?php
 // $Id$
 
-require_once('general.inc');
 require_once('general_deletion.inc');
 require_once('email.inc');
 
@@ -183,15 +182,15 @@ function lab_migration_menu()
     'weight' => 3,
     'file' => 'dependency_approval.inc',
   );
-  $items['lab_migration/code_approval/editcode'] = array(
-    'title' => 'Admin Edit Example',
-    'description' => 'Admin Edit Example',
+  $items['lab_migration/code_approval/upload'] = array(
+    'title' => 'Admin Upload',
+    'description' => 'Admin Upload',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('upload_examples_admin_edit_form'),
-    'access arguments' => array('approve code'),
+    'page arguments' => array('bulk_upload_code_form'),
+    'access arguments' => array('bulk manage code'),
     'type' => MENU_CALLBACK,
-    'weight' => 3,
-    'file' => 'editcodeadmin.inc',
+    'weight' => 4,
+    'file' => 'bulk_upload_code.inc',
   );
   $items['lab_migration/code_approval/notes'] = array(
     'title' => 'Notes for Reviewers',
@@ -242,18 +241,9 @@ function lab_migration_menu()
     'file' => 'dependency.inc',
     'weight' => 3,
   );
-  $items['lab_migration/code/edit'] = array(
-    'title' => 'Edit Example',
-    'description' => 'Edit Example', 
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('upload_examples_edit_form'),
-    'access arguments' => array('edit uploaded code'),
-    'type' => MENU_CALLBACK,
-    'file' => 'editcode.inc',
-  );
   $items['lab_migration/code/delete'] = array(
-    'title' => 'Delete Example',
-    'description' => 'Delete Example', 
+    'title' => 'Delete Solution',
+    'description' => 'Delete Solution', 
     'page callback' => 'upload_code_delete',
     'access arguments' => array('upload code'),
     'type' => MENU_CALLBACK,
@@ -400,9 +390,9 @@ function lab_migration_ajax()
     if ($example_data = db_fetch_object($example_q))
     {
       if ($example_data->approval_status == 1)
-        echo 'Warning! Example already approved. You cannot upload the same example again.';
+        echo 'Warning! Solution already approved. You cannot upload the same solution again.';
       else
-        echo 'Warning! Example already uploaded. Delete the example and reupload it.';
+        echo 'Warning! Solution already uploaded. Delete the solution and reupload it.';
       return;
     }
   }
@@ -469,5 +459,30 @@ function get_proposal() {
 		 return FALSE;
 	}
   return FALSE;
+}
+
+/***************************** GENERAL FUNCTIONS ******************************/
+
+function get_category_name($category_id) {
+    $category_data = '';
+  	switch ($category_id)
+  	{
+    case 0: $category_data = 'Not Selected'; break;
+    case 1: $category_data = 'Fluid Mechanics'; break;
+    case 2: $category_data = 'Control Theory & Control Systems'; break;
+    case 3: $category_data = 'Chemical Engineering'; break;
+    case 4: $category_data = 'Thermodynamics'; break;
+    case 5: $category_data = 'Mechanical Engineering'; break;
+    case 6: $category_data = 'Signal Processing'; break;
+    case 7: $category_data = 'Digital Communications'; break;
+    case 8: $category_data = 'Electrical Technology'; break;
+    case 9: $category_data = 'Mathematics & Pure Science'; break;
+    case 10: $category_data = 'Analog Electronics'; break;
+    case 11: $category_data = 'Digital Electronics'; break;
+    case 12: $category_data = 'Computer Programming'; break;
+    case 13: $category_data = 'Others'; break;
+    default: $category_data = 'Unknown'; break;
+  	}
+  	return $category_data;
 }
 

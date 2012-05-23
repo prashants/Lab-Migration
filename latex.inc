@@ -193,7 +193,7 @@ function _latex_run_script($lab_filename, $solution_provider_filename, $latex_fi
 {
   $root_path = lab_migration_path();
   $ret = 0;
-
+  chdir("lab_migration");
   chdir("uploads");
   chdir("latex");
 

@@ -239,7 +239,7 @@ function lab_migration_run_form($form_state)
 function _list_of_labs()
 {
   $lab_titles = array('0' => 'Please select...');
-  $lab_titles_q = db_query("SELECT * FROM {lab_migration_proposal} ORDER BY lab_title ASC");
+  $lab_titles_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_display = 1 ORDER BY lab_title ASC");
   while ($lab_titles_data = db_fetch_object($lab_titles_q))
   {
     $lab_titles[$lab_titles_data->id] = $lab_titles_data->lab_title . ' (Proposed by ' . $lab_titles_data->name . ')';

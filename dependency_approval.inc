@@ -118,6 +118,15 @@ function dependency_approval_form_submit($form, &$form_state)
 					if (delete_dependency($form_state['values']['run']['dependency']))
 					{
 						drupal_set_message('Dependency deleted' , 'status');
+
+						/* email */
+						$email_subject = t('Dependency deleted');
+						$email_body = t('Dependency deleted : .') . $form_state['values']['run']['dependency'];
+						$email_to = variable_get('lab_migration_emails', '') . ', ' . $user->mail;
+						$param['standard']['subject'] = $email_subject;
+						$param['standard']['body'] = $email_body;
+						if (!drupal_mail('lab_migration', 'standard', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
+							drupal_set_message('Error sending email message.', 'error');
 					}
 				}
       }

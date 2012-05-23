@@ -157,8 +157,9 @@ function solution_proposal_approval_form_validate($form, &$form_state)
   $solution_provider_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
   $solution_provider_data = db_fetch_object($solution_provider_q);
 
- 	$solution_provider_present_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1, 2) AND id != %d", $solution_provider_data->uid, $proposal_id);
-	if (db_fetch_object($solution_provider_present_q)) {
+ 	$solution_provider_present_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND approval_status IN (0, 1) AND id != %d", $solution_provider_data->uid, $proposal_id);
+	if ($x = db_fetch_object($solution_provider_present_q)) {
+		drupal_set_message($proposal_id);
 		form_set_error('', t('Solution provider has already one proposal active'));
 	}
 }
