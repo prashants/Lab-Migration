@@ -46,7 +46,7 @@ function lab_migration_upload_code_delete()
   }
 
   /* deleting solution files */
-  if (delete_solution($solution_data->id))
+  if (lab_migration_delete_solution($solution_data->id))
   {
     drupal_set_message('Solution deleted.', 'status');
 

@@ -64,7 +64,7 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
 
   /* regenerate lab if full lab selected */
   if ($full_lab)
-  	del_lab_pdf($proposal_data->id);
+  	lab_migration_del_lab_pdf($proposal_data->id);
 
   /* check if lab already generated */
   if (file_exists($dir_path . "lab_" . $proposal_data->id . ".pdf"))
@@ -180,7 +180,7 @@ function _latex_generate_files($lab_id, $full_lab = FALSE)
   /*********************** DELETING TEMPORARY FILES ***************************/
   /* regenerate lab if full lab selected */
   if ($full_lab)
-  	del_lab_pdf($proposal_data->id);
+  	lab_migration_del_lab_pdf($proposal_data->id);
 }
 
 function _latex_copy_script_file()
@@ -209,7 +209,7 @@ function _latex_run_script($lab_filename, $solution_provider_filename, $latex_fi
 function lab_migration_delete_lab_pdf()
 {
 	$lab_id = arg(3);
-	del_lab_pdf($lab_id);
+	lab_migration_del_lab_pdf($lab_id);
 	drupal_set_message(t('Lab schedule for regeneration.'), 'status');
 	drupal_goto('lab_migration/code_approval/bulk');
 	return;

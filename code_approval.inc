@@ -230,7 +230,7 @@ function lab_migration_code_approval_form_submit($form, &$form_state)
 		if (!drupal_mail('lab_migration', 'solution_approved', $email_to, language_default(), $param, variable_get('lab_migration_from_email', NULL), TRUE))
 			drupal_set_message('Error sending email message.', 'error');
 	} else if ($form_state['values']['approved'] == "2") {
-		if (delete_solution($solution_id))
+		if (lab_migration_delete_solution($solution_id))
 		{
 			/* sending email */
 			$email_to = $user_data->mail . ', ' . variable_get('lab_migration_emails', '');

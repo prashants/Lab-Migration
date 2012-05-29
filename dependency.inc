@@ -5,7 +5,7 @@ function lab_migration_upload_dependency_form($form_state)
 {
   global $user;
 
-  $proposal_data = get_proposal();
+  $proposal_data = lab_migration_get_proposal();
   if (!$proposal_data) {
       drupal_goto('');
       return;
@@ -77,7 +77,7 @@ function lab_migration_upload_dependency_form_validate($form, &$form_state)
   	form_set_error('', t('Invalid'));
   }
 
-  if (!check_name($form_state['values']['depfile1_caption']))
+  if (!lab_migration_check_name($form_state['values']['depfile1_caption']))
     form_set_error('code_caption', t('Caption can contain only alphabets, numbers and spaces.'));
 
   if (isset($_FILES['files']))
@@ -112,7 +112,7 @@ function lab_migration_upload_dependency_form_submit($form, &$form_state) {
 
   $root_path = lab_migration_path();
 
-  $proposal_data = get_proposal();
+  $proposal_data = lab_migration_get_proposal();
   if (!$proposal_data) {
       drupal_goto('');
       return;

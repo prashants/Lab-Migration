@@ -208,10 +208,10 @@ function lab_migration_bulk_upload_code_form($form_state)
 
 function lab_migration_bulk_upload_code_form_validate($form, &$form_state)
 {
-  if (!check_code_number($form_state['values']['code_number']))
+  if (!lab_migration_check_code_number($form_state['values']['code_number']))
     form_set_error('code_number', t('Invalid Code Number. Code Number can contain only numbers.'));
 
-  if (!check_name($form_state['values']['code_caption']))
+  if (!lab_migration_check_name($form_state['values']['code_caption']))
     form_set_error('code_caption', t('Caption can contain only alphabets, numbers and spaces.'));
 
   if (isset($_FILES['files']))

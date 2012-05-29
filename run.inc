@@ -115,7 +115,7 @@ function lab_migration_run_form($form_state)
       						'</ul>';
     }
 
-    $category_data = get_category_name($lab_details->category);
+    $category_data = lab_migration_get_category_name($lab_details->category);
 
     $form['run']['lab_details'] = array(
       '#type' => 'item',

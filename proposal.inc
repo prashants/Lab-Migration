@@ -136,7 +136,7 @@ function lab_migration_proposal_form($form_state)
 function lab_migration_proposal_form_validate($form, &$form_state)
 {
   if (!preg_match('/^[0-9\ \+]{0,15}$/', $form_state['values']['contact_ph']))
-    form_set_error('mobile', t('Invalid contact phone number'));
+    form_set_error('contact_ph', t('Invalid contact phone number'));
   return;
 }
 

@@ -115,7 +115,7 @@ function lab_migration_dependency_approval_form_submit($form, &$form_state)
 				if ($solution_data = db_fetch_object($solution_q)) {
 					drupal_set_message('Cannot delete dependency since it is linked with some solutions' , 'error');
 				} else {
-					if (delete_dependency($form_state['values']['run']['dependency']))
+					if (lab_migration_delete_dependency($form_state['values']['run']['dependency']))
 					{
 						drupal_set_message('Dependency deleted' , 'status');
 

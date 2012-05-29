@@ -411,14 +411,14 @@ function lab_migration_check_valid_filename($file_name) {
       return TRUE;
 }
 
-function check_name($name = '') {
+function lab_migration_check_name($name = '') {
   if (!preg_match('/^[0-9a-zA-Z\ ]+$/', $name))
     return FALSE;
   else
     return TRUE;
 }
 
-function check_code_number($number = '') {
+function lab_migration_check_code_number($number = '') {
   if (!preg_match('/^[0-9]+$/', $number))
     return FALSE;
   else
@@ -431,7 +431,7 @@ function lab_migration_path() {
 
 /************************* USER VERIFICATION FUNCTIONS ************************/
 
-function get_proposal() {
+function lab_migration_get_proposal() {
 	global $user;
 
   $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE solution_provider_uid = %d AND solution_status = 2 ORDER BY id DESC LIMIT 1", $user->uid);
@@ -463,26 +463,26 @@ function get_proposal() {
 
 /***************************** GENERAL FUNCTIONS ******************************/
 
-function get_category_name($category_id) {
-    $category_data = '';
-  	switch ($category_id)
-  	{
-    case 0: $category_data = 'Not Selected'; break;
-    case 1: $category_data = 'Fluid Mechanics'; break;
-    case 2: $category_data = 'Control Theory & Control Systems'; break;
-    case 3: $category_data = 'Chemical Engineering'; break;
-    case 4: $category_data = 'Thermodynamics'; break;
-    case 5: $category_data = 'Mechanical Engineering'; break;
-    case 6: $category_data = 'Signal Processing'; break;
-    case 7: $category_data = 'Digital Communications'; break;
-    case 8: $category_data = 'Electrical Technology'; break;
-    case 9: $category_data = 'Mathematics & Pure Science'; break;
-    case 10: $category_data = 'Analog Electronics'; break;
-    case 11: $category_data = 'Digital Electronics'; break;
-    case 12: $category_data = 'Computer Programming'; break;
-    case 13: $category_data = 'Others'; break;
-    default: $category_data = 'Unknown'; break;
-  	}
-  	return $category_data;
+function lab_migration_get_category_name($category_id) {
+  $category_data = '';
+  switch ($category_id)
+  {
+  case 0: $category_data = 'Not Selected'; break;
+  case 1: $category_data = 'Fluid Mechanics'; break;
+  case 2: $category_data = 'Control Theory & Control Systems'; break;
+  case 3: $category_data = 'Chemical Engineering'; break;
+  case 4: $category_data = 'Thermodynamics'; break;
+  case 5: $category_data = 'Mechanical Engineering'; break;
+  case 6: $category_data = 'Signal Processing'; break;
+  case 7: $category_data = 'Digital Communications'; break;
+  case 8: $category_data = 'Electrical Technology'; break;
+  case 9: $category_data = 'Mathematics & Pure Science'; break;
+  case 10: $category_data = 'Analog Electronics'; break;
+  case 11: $category_data = 'Digital Electronics'; break;
+  case 12: $category_data = 'Computer Programming'; break;
+  case 13: $category_data = 'Others'; break;
+  default: $category_data = 'Unknown'; break;
+  }
+  return $category_data;
 }
 

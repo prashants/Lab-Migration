@@ -277,7 +277,7 @@ function lab_migration_bulk_approval_form_submit($form, &$form_state)
 	if ($form_state['clicked_button']['#value'] == 'Submit')
 	{
 		if ($form_state['values']['run']['lab'])
-			del_lab_pdf($form_state['values']['run']['lab']);
+			lab_migration_del_lab_pdf($form_state['values']['run']['lab']);
 
 	  if (user_access('lab migration bulk manage code'))
     {
@@ -318,7 +318,7 @@ function lab_migration_bulk_approval_form_submit($form, &$form_state)
           return;
         }
 
-        if (delete_lab($form_state['values']['run']['lab']))
+        if (lab_migration_delete_lab($form_state['values']['run']['lab']))
         {
           drupal_set_message(t('Dis-Approved and Deleted Entire Lab.'), 'status');
         } else {
@@ -349,7 +349,7 @@ Reason for dis-approval:
           return;
         }
 
-        if (delete_lab($form_state['values']['run']['lab']))
+        if (lab_migration_delete_lab($form_state['values']['run']['lab']))
         {
           drupal_set_message(t('Dis-Approved and Deleted Entire Lab solutions.'), 'status');
 
@@ -409,7 +409,7 @@ Reason for dis-approval:
           return;
         }
 
-        if (delete_experiment($form_state['values']['run']['experiment']))
+        if (lab_migration_delete_experiment($form_state['values']['run']['experiment']))
         {
           drupal_set_message(t('Dis-Approved and Deleted Entire Experiment.'), 'status');
         } else {
@@ -444,7 +444,7 @@ Reason for dis-approval:
 
       } else if ($form_state['values']['run']['disapprove_solution'] == "1") {
 
-        if (delete_solution($form_state['values']['run']['solution']))
+        if (lab_migration_delete_solution($form_state['values']['run']['solution']))
         {
           drupal_set_message(t('Solution Dis-Approved and Deleted.'), 'status');
         } else {
