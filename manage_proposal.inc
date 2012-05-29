@@ -30,7 +30,7 @@ function _proposal_pending_solution()
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE approval_status = 1 ORDER BY id DESC");
   while ($pending_data = db_fetch_object($pending_q))
   {
-    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->lab_title, $pending_data->department, l('Status', 'lab_migration/manage_proposal/status/' . $pending_data->id));
+    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), date('d-m-Y', $pending_data->approval_date), l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->lab_title, $pending_data->department, l('Status', 'lab_migration/manage_proposal/status/' . $pending_data->id));
   }
 
   /* check if there are any pending proposals */
@@ -40,7 +40,7 @@ function _proposal_pending_solution()
     return '';
   }
 
-  $pending_header = array('Date of Submission', 'Name', 'Title of the Lab', 'Department', 'Action');
+  $pending_header = array('Date of Submission', 'Date of Approval', 'Name', 'Title of the Lab', 'Department', 'Action');
   $output = theme_table($pending_header, $pending_rows);
   return $output; 
 }
@@ -149,7 +149,7 @@ function proposal_approval_form($form_state)
   $form['contact_ph'] = array(
     '#type' => 'item',
     '#value' => $proposal_data->contact_ph,
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
   );
   $form['department'] = array(
     '#type' => 'item',
@@ -333,7 +333,7 @@ function proposal_status_form($form_state)
   $form['contact_ph'] = array(
     '#type' => 'item',
     '#value' => $proposal_data->contact_ph,
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
   );
   $form['department'] = array(
     '#type' => 'item',
@@ -541,7 +541,7 @@ function proposal_edit_form($form_state)
   );
   $form['contact_ph'] = array(
     '#type' => 'textfield',
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
     '#size' => 30,
     '#maxlength' => 15,
     '#required' => TRUE,
@@ -812,7 +812,7 @@ function category_edit_form($form_state)
   $form['contact_ph'] = array(
     '#type' => 'item',
     '#value' => $proposal_data->contact_ph,
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
   );
   $form['department'] = array(
     '#type' => 'item',

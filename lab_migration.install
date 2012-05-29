@@ -13,6 +13,15 @@ function lab_migration_install() {
   variable_set('lab_migration_dependency_extensions', '');
   variable_set('lab_migration_result_extensions', '');
   variable_set('lab_migration_xcos_extensions', '');
+
+  // create uploads folder
+  $upload_path = $_SERVER['DOCUMENT_ROOT'] . base_path() . 'lab_migration_uploads';
+  if (!is_dir($upload_path))
+    mkdir($upload_path);
+  if (!is_dir($upload_path . '/latex'))
+    mkdir($upload_path . '/latex');
+  if (!is_dir($upload_path . '/DEPENDENCIES'))
+    mkdir($upload_path . '/DEPENDENCIES');
 }
 
 /**
@@ -35,7 +44,7 @@ function lab_migration_uninstall() {
  */
 function lab_migration_schema() {
 
-  /* proposal */
+	/* proposal */
 	$schema['lab_migration_proposal'] = array(
 		'description' => t('TODO: please describe this table!'),
 		'fields' => array(
@@ -130,10 +139,45 @@ function lab_migration_schema() {
 				'type' => 'int',
 				'not null' => TRUE,
 			),
+			'expected_completion_date' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'int',
+				'not null' => TRUE,
+			),
 			'message' => array(
 				'description' => t('TODO: please describe this field!'),
 				'type' => 'text',
 				'size' => 'medium',
+				'not null' => TRUE,
+			),
+			'solution_provider_name_title' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '5',
+				'not null' => TRUE,
+			),
+			'solution_provider_name' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+			),
+			'solution_provider_contact_ph' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '15',
+				'not null' => TRUE,
+			),
+			'solution_provider_department' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '255',
+				'not null' => TRUE,
+			),
+			'solution_provider_university' => array(
+				'description' => t('TODO: please describe this field!'),
+				'type' => 'varchar',
+				'length' => '255',
 				'not null' => TRUE,
 			),
 		),

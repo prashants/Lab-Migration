@@ -76,7 +76,7 @@ function lab_migration_solution_proposal_form($form_state)
   );
   $form['solution_provider_contact_ph'] = array(
     '#type' => 'textfield',
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
     '#size' => 30,
     '#maxlength' => 15,
     '#required' => TRUE,

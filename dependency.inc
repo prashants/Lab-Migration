@@ -151,7 +151,7 @@ function upload_dependency_form_submit($form, &$form_state) {
         $dependency_names[] =  $_FILES['files']['name'][$file_form_name];
         $file_upload_counter++;
       } else {
-        drupal_set_message('Error uploading dependency : ' . $dest_path . '/' . $_FILES['files']['name'][$file_form_name], 'error');
+        drupal_set_message('Error uploading dependency : ' . $dest_path . $_FILES['files']['name'][$file_form_name], 'error');
       }
     }
   }

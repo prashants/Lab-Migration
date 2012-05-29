@@ -62,7 +62,7 @@ function lab_migration_proposal_form($form_state)
   );
   $form['contact_ph'] = array(
     '#type' => 'textfield',
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
     '#size' => 30,
     '#maxlength' => 15,
     '#required' => TRUE,
@@ -114,6 +114,7 @@ function lab_migration_proposal_form($form_state)
 		'#options' => array('1' => 'Yes', '2' => 'No'),
 		'#required' => TRUE,
 		'#default_value' => '1',
+		'#description' => 'If you dont want to provide the solution then it will be opened for the community, anyone may come forward and provide the solution.',
   );
 
   $form['solution_display'] = array(
@@ -122,6 +123,7 @@ function lab_migration_proposal_form($form_state)
 		'#options' => array('1' => 'Yes', '2' => 'No'),
 		'#required' => TRUE,
 		'#default_value' => '1',
+		'#description' => 'If yes, solutions will be made available to everyone for downloading.',
   );
 
   $form['submit'] = array(

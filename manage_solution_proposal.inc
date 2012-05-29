@@ -63,7 +63,7 @@ function solution_proposal_approval_form($form_state)
   $form['contact_ph'] = array(
     '#type' => 'item',
     '#value' => $proposal_data->contact_ph,
-    '#title' => t('Contact Phone No.'),
+    '#title' => t('Contact No.'),
   );
   $form['department'] = array(
     '#type' => 'item',

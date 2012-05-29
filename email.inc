@@ -47,7 +47,7 @@ We have received your following Lab migration proposal:
 
 Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Contact Phone : ' . $proposal_data->contact_ph . '
+Contact No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 
@@ -104,7 +104,7 @@ Reason for disapproval: ' . $proposal_data->message . '
 
 Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Contact Phone : ' . $proposal_data->contact_ph . '
+Contact No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 
@@ -157,7 +157,7 @@ Your following Lab migration proposal has been approved:
 
 Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Contact Phone : ' . $proposal_data->contact_ph . '
+Contact No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 
@@ -213,7 +213,7 @@ Following Lab migration has been completed sucessfully :
 
 Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Contact Phone : ' . $proposal_data->contact_ph . '
+Contact No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 
@@ -264,7 +264,7 @@ We have received your proposal for solution for following Lab migration :
 
 Full Name : ' . $proposal_data->name_title . ' ' . $proposal_data->name . '
 Email : ' . $user_data->mail . '
-Contact Phone : ' . $proposal_data->contact_ph . '
+Contact No. : ' . $proposal_data->contact_ph . '
 Department/Branch : ' . $proposal_data->department . '
 University/Institute : ' . $proposal_data->university . '
 

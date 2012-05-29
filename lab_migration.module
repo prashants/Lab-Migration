@@ -426,7 +426,7 @@ function check_code_number($number = '') {
 }
 
 function lab_migration_path() {
-  return $_SERVER['DOCUMENT_ROOT'] . base_path() . 'lab_migration/uploads/';
+  return $_SERVER['DOCUMENT_ROOT'] . base_path() . 'lab_migration_uploads/';
 }
 
 /************************* USER VERIFICATION FUNCTIONS ************************/

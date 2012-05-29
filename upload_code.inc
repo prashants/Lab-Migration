@@ -475,7 +475,7 @@ function upload_code_form_submit($form, &$form_state) {
           );
         drupal_set_message($file_name . ' uploaded successfully.', 'status');
       } else {
-        drupal_set_message('Error uploading file : ' . $dest_path . '/' . $file_name, 'error');
+        drupal_set_message('Error uploading file : ' . $dest_path . $file_name, 'error');
       }
     }
   }
