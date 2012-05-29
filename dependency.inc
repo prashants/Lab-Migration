@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function upload_dependency_form($form_state)
+function lab_migration_upload_dependency_form($form_state)
 {
   global $user;
 
@@ -65,7 +65,7 @@ function upload_dependency_form($form_state)
   return $form;
 }
 
-function upload_dependency_form_validate($form, &$form_state)
+function lab_migration_upload_dependency_form_validate($form, &$form_state)
 {
   global $user;
 
@@ -107,7 +107,7 @@ function upload_dependency_form_validate($form, &$form_state)
   }
 }
 
-function upload_dependency_form_submit($form, &$form_state) {
+function lab_migration_upload_dependency_form_submit($form, &$form_state) {
   global $user;
 
   $root_path = lab_migration_path();

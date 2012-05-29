@@ -4,7 +4,7 @@
 /********************************* BULK APPROVAL ******************************/
 /******************************************************************************/
 
-function bulk_approval_form($form_state)
+function lab_migration_bulk_approval_form($form_state)
 {
   $form['#redirect'] = FALSE;
 
@@ -269,7 +269,7 @@ function bulk_approval_form($form_state)
 }
 
 
-function bulk_approval_form_submit($form, &$form_state)
+function lab_migration_bulk_approval_form_submit($form, &$form_state)
 {
 	global $user;
   $root_path = lab_migration_path();
@@ -279,7 +279,7 @@ function bulk_approval_form_submit($form, &$form_state)
 		if ($form_state['values']['run']['lab'])
 			del_lab_pdf($form_state['values']['run']['lab']);
 
-	  if (user_access('bulk manage code'))
+	  if (user_access('lab migration bulk manage code'))
     {
       if ($form_state['values']['run']['approve_lab'] == "1")
       {
@@ -312,7 +312,7 @@ function bulk_approval_form_submit($form, &$form_state)
 
       } else if ($form_state['values']['run']['disapprove_lab'] == "1") {
 
-        if (!user_access('bulk delete code'))
+        if (!user_access('lab migration bulk delete code'))
         {
           drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Lab.'), 'error');
           return;
@@ -335,7 +335,7 @@ Reason for dis-approval:
 
       } else if ($form_state['values']['run']['delete_lab_including_proposal'] == "1") {
 
-        if (!user_access('bulk delete code'))
+        if (!user_access('lab migration bulk delete code'))
         {
           drupal_set_message(t('You do not have permission to Bulk Delete Entire Lab Including Proposal.'), 'error');
           return;
@@ -403,7 +403,7 @@ Reason for dis-approval:
 
       } else if ($form_state['values']['run']['disapprove_experiment'] == "1") {
 
-        if (!user_access('bulk delete code'))
+        if (!user_access('lab migration bulk delete code'))
         {
           drupal_set_message(t('You do not have permission to Bulk Dis-Approved and Deleted Entire Experiment.'), 'error');
           return;

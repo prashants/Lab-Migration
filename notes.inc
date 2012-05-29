@@ -5,7 +5,7 @@
 /***************************** BOOK NOTES *************************************/
 /******************************************************************************/
 
-function lab_notes_form($form_state)
+function lab_migration_lab_notes_form($form_state)
 {
   global $user;
 
@@ -55,7 +55,7 @@ function lab_notes_form($form_state)
   return $form;
 }
 
-function lab_notes_form_submit($form, &$form_state)
+function lab_migration_lab_notes_form_submit($form, &$form_state)
 {
   global $user;
 

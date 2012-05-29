@@ -4,7 +4,7 @@
 /********************************* BULK APPROVAL ******************************/
 /******************************************************************************/
 
-function dependency_approval_form($form_state)
+function lab_migration_dependency_approval_form($form_state)
 {
   $form['#redirect'] = FALSE;
 
@@ -100,7 +100,7 @@ function dependency_approval_form($form_state)
 }
 
 
-function dependency_approval_form_submit($form, &$form_state)
+function lab_migration_dependency_approval_form_submit($form, &$form_state)
 {
 	global $user;
   $root_path = lab_migration_path();

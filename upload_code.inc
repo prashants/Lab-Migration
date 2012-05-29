@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function list_experiments()
+function lab_migration_list_experiments()
 {
   global $user;
 
@@ -68,7 +68,7 @@ function list_experiments()
   return $return_html;
 }
 
-function upload_code_form($form_state)
+function lab_migration_upload_code_form($form_state)
 {
   global $user;
 
@@ -270,7 +270,7 @@ function upload_code_form($form_state)
   return $form;
 }
 
-function upload_code_form_validate($form, &$form_state)
+function lab_migration_upload_code_form_validate($form, &$form_state)
 {
   if (!check_code_number($form_state['values']['code_number']))
     form_set_error('code_number', t('Invalid Code Number. Code Number can contain only numbers.'));
@@ -354,7 +354,7 @@ function upload_code_form_validate($form, &$form_state)
   drupal_add_js($dep_selection_js, 'inline', 'header');
 }
 
-function upload_code_form_submit($form, &$form_state) {
+function lab_migration_upload_code_form_submit($form, &$form_state) {
   global $user;
 
   $root_path = lab_migration_path();

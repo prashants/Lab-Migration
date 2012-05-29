@@ -4,7 +4,7 @@
 /***************************** DELETE CODE ************************************/
 /******************************************************************************/
 
-function upload_code_delete()
+function lab_migration_upload_code_delete()
 {
   global $user;
 

@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function bulk_upload_code_form($form_state)
+function lab_migration_bulk_upload_code_form($form_state)
 {
   global $user;
 
@@ -206,7 +206,7 @@ function bulk_upload_code_form($form_state)
   return $form;
 }
 
-function bulk_upload_code_form_validate($form, &$form_state)
+function lab_migration_bulk_upload_code_form_validate($form, &$form_state)
 {
   if (!check_code_number($form_state['values']['code_number']))
     form_set_error('code_number', t('Invalid Code Number. Code Number can contain only numbers.'));
@@ -290,7 +290,7 @@ function bulk_upload_code_form_validate($form, &$form_state)
   drupal_add_js($dep_selection_js, 'inline', 'header');
 }
 
-function bulk_upload_code_form_submit($form, &$form_state) {
+function lab_migration_bulk_upload_code_form_submit($form, &$form_state) {
   global $user;
 
   $root_path = lab_migration_path();

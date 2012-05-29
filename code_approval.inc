@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function code_approval()
+function lab_migration_code_approval()
 {
   /* get a list of unapproved solutions */
   $pending_solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE approval_status = 0");
@@ -46,7 +46,7 @@ function code_approval()
   return $output; 
 }
 
-function code_approval_form($form_state)
+function lab_migration_code_approval_form($form_state)
 {
   $solution_id = (int)arg(3);
 
@@ -182,7 +182,7 @@ function code_approval_form($form_state)
   return $form;
 }
 
-function code_approval_form_submit($form, &$form_state)
+function lab_migration_code_approval_form_submit($form, &$form_state)
 {
   global $user;
 

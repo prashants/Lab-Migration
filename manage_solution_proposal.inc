@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function solution_proposal_pending()
+function lab_migration_solution_proposal_pending()
 {
   /* get list of solution proposal where the solution_provider_uid is set to some userid except 0 and solution_status is also 1 */
   $pending_rows = array();
@@ -27,7 +27,7 @@ function solution_proposal_pending()
 /***************** SOLUTION PROPOSAL APPROVAL FORM ****************************/
 /******************************************************************************/
 
-function solution_proposal_approval_form($form_state)
+function lab_migration_solution_proposal_approval_form($form_state)
 {
   global $user;
 
@@ -150,7 +150,7 @@ function solution_proposal_approval_form($form_state)
   return $form;
 }
 
-function solution_proposal_approval_form_validate($form, &$form_state)
+function lab_migration_solution_proposal_approval_form_validate($form, &$form_state)
 {
   $proposal_id = (int)arg(3);
 
@@ -164,7 +164,7 @@ function solution_proposal_approval_form_validate($form, &$form_state)
 	}
 }
 
-function solution_proposal_approval_form_submit($form, &$form_state)
+function lab_migration_solution_proposal_approval_form_submit($form, &$form_state)
 {
 	global $user;
 

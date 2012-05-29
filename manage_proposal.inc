@@ -1,7 +1,7 @@
 <?php
 // $Id$
 
-function _proposal_pending()
+function lab_migration_proposal_pending()
 {
   /* get pending proposals to be approved */
   $pending_rows = array();
@@ -23,7 +23,7 @@ function _proposal_pending()
   return $output; 
 }
 
-function _proposal_pending_solution()
+function lab_migration_proposal_pending_solution()
 {
   /* get pending proposals to be approved */
   $pending_rows = array();
@@ -45,7 +45,7 @@ function _proposal_pending_solution()
   return $output; 
 }
 
-function _proposal_all()
+function lab_migration_proposal_all()
 {
   /* get pending proposals to be approved */
   $proposal_rows = array();
@@ -76,7 +76,7 @@ function _proposal_all()
   return $output; 
 }
 
-function _category_all()
+function lab_migration_category_all()
 {
   /* get pending proposals to be approved */
   $proposal_rows = array();
@@ -113,7 +113,7 @@ function _category_all()
 /************************** PROPOSAL APPROVAL FORM ****************************/
 /******************************************************************************/
 
-function proposal_approval_form($form_state)
+function lab_migration_proposal_approval_form($form_state)
 {
   global $user;
 
@@ -230,7 +230,7 @@ function proposal_approval_form($form_state)
   return $form;
 }
 
-function proposal_approval_form_submit($form, &$form_state)
+function lab_migration_proposal_approval_form_submit($form, &$form_state)
 {
 	global $user;
 
@@ -297,7 +297,7 @@ function proposal_approval_form_submit($form, &$form_state)
 /*************************** PROPOSAL STATUS FORM *****************************/
 /******************************************************************************/
 
-function proposal_status_form($form_state)
+function lab_migration_proposal_status_form($form_state)
 {
   global $user;
 
@@ -373,20 +373,20 @@ function proposal_status_form($form_state)
   } else {
   	$solution_provider_user_data = user_load($proposal_data->solution_provider_uid);
   	if ($solution_provider_user_data)
-  		$solution_provider = "Solution will be provided by user " . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid);
+      $solution_provider = "Solution will be provided by user " . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid);
   	else
-  		$solution_provider = "User does not exists";
+      $solution_provider = "User does not exists";
   }
   $form['solution_provider_uid'] = array(
-	  '#type' => 'item',
-		'#title' => t('Who will provide the solution'),
-		'#value' => $solution_provider,
+    '#type' => 'item',
+    '#title' => t('Who will provide the solution'),
+    '#value' => $solution_provider,
   );
 
   $form['solution_display'] = array(
-	  '#type' => 'item',
-		'#title' => t('Display the solution on the www.scilab.in website'),
-		'#value' => ($proposal_data->solution_display == 1) ? "Yes" : "No",
+    '#type' => 'item',
+    '#title' => t('Display the solution on the www.scilab.in website'),
+    '#value' => ($proposal_data->solution_display == 1) ? "Yes" : "No",
   );
 
   $proposal_status = '';
@@ -443,7 +443,7 @@ function proposal_status_form($form_state)
   return $form;
 }
 
-function proposal_status_form_submit($form, &$form_state)
+function lab_migration_proposal_status_form_submit($form, &$form_state)
 {
   global $user;
 
@@ -494,7 +494,7 @@ function proposal_status_form_submit($form, &$form_state)
 /**************************** PROPOSAL EDIT FORM ******************************/
 /******************************************************************************/
 
-function proposal_edit_form($form_state)
+function lab_migration_proposal_edit_form($form_state)
 {
   global $user;
 
@@ -552,7 +552,7 @@ function proposal_edit_form($form_state)
     '#title' => t('Department/Branch'),
     '#options' => array('' => 'Please select...',
                         'Computer Engineering' => 'Computer Engineering',
-    										'Electrical Engineering' => 'Electrical Engineering',
+                        'Electrical Engineering' => 'Electrical Engineering',
                         'Electronics Engineering' => 'Electronics Engineering',
                         'Chemical Engineering' => 'Chemical Engineering',
                         'Instrumentation Engineering' => 'Instrumentation Engineering',
@@ -583,11 +583,11 @@ function proposal_edit_form($form_state)
 
   /* get experiment details */
   $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY id ASC", $proposal_id);
-			$form['lab_experiment'] = array(
-				'#type' => 'fieldset',
-				'#collapsible' => FALSE,
-				'#tree' => TRUE,
-			);
+    $form['lab_experiment'] = array(
+      '#type' => 'fieldset',
+      '#collapsible' => FALSE,
+      '#tree' => TRUE,
+    );
   for ($counter = 1; $counter <= 15; $counter++) {
   	$experiment_title = '';
   	$experiment_data = db_fetch_object($experiment_q);
@@ -625,22 +625,22 @@ function proposal_edit_form($form_state)
 		$solution_provider_user = $user_data->name;
 	}
   $form['solution_provider_uid'] = array(
-	  '#type' => 'item',
-		'#title' => t('Who will provide the solution'),
-		'#value' => $solution_provider_user,
+    '#type' => 'item',
+    '#title' => t('Who will provide the solution'),
+    '#value' => $solution_provider_user,
   );
 
   $form['open_solution'] = array(
-	  '#type' => 'checkbox',
-		'#title' => t('Open the solution for everyone'),
+    '#type' => 'checkbox',
+    '#title' => t('Open the solution for everyone'),
   );
 
   $form['solution_display'] = array(
-	  '#type' => 'radios',
-		'#title' => t('Do you want to display the solution on the www.scilab.in website'),
-		'#options' => array('1' => 'Yes', '2' => 'No'),
-		'#required' => TRUE,
-		'#default_value' => ($proposal_data->solution_display == 1) ? "1" : "2",
+    '#type' => 'radios',
+    '#title' => t('Do you want to display the solution on the www.scilab.in website'),
+    '#options' => array('1' => 'Yes', '2' => 'No'),
+    '#required' => TRUE,
+    '#default_value' => ($proposal_data->solution_display == 1) ? "1" : "2",
   );
 
   $form['delete_proposal'] = array(
@@ -659,24 +659,24 @@ function proposal_edit_form($form_state)
   return $form;
 }
 
-function proposal_edit_form_validate($form, &$form_state)
+function lab_migration_proposal_edit_form_validate($form, &$form_state)
 {
   $proposal_id = (int)arg(3);
 
   /* check before delete proposal */
   if ($form_state['values']['delete_proposal'] == 1) {
-		$experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
-		while ($experiment_data = db_fetch_object($experiment_q)) {
-			$solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d", $experiment_data->id);
-			if (db_fetch_object($solution_q)) {
-				form_set_error('', t('Cannot delete proposal since there are solutions already uploaded. Use the "Bulk Manage" interface to delete this proposal'));
-			}
-		}
+    $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
+    while ($experiment_data = db_fetch_object($experiment_q)) {
+      $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d", $experiment_data->id);
+      if (db_fetch_object($solution_q)) {
+        form_set_error('', t('Cannot delete proposal since there are solutions already uploaded. Use the "Bulk Manage" interface to delete this proposal'));
+      }
+    }
   }
   return;
 }
 
-function proposal_edit_form_submit($form, &$form_state)
+function lab_migration_proposal_edit_form_submit($form, &$form_state)
 {
   global $user;
 
@@ -701,15 +701,15 @@ function proposal_edit_form_submit($form, &$form_state)
 
   /* delete proposal */
   if ($form_state['values']['delete_proposal'] == 1) {
-		db_query("DELETE FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
-		db_query("DELETE FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
-		drupal_set_message(t('Proposal Delete'), 'status');
-		drupal_goto('lab_migration/manage_proposal');
-		return;
+    db_query("DELETE FROM {lab_migration_proposal} WHERE id = %d", $proposal_id);
+    db_query("DELETE FROM {lab_migration_experiment} WHERE proposal_id = %d", $proposal_id);
+    drupal_set_message(t('Proposal Delete'), 'status');
+    drupal_goto('lab_migration/manage_proposal');
+    return;
   }
 
   if ($form_state['values']['solution_display'] == 1) {
-		db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = %d, solution_status = %d, solution_provider_name_title = '', 	solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department 	= '', solution_provider_university = '' WHERE id = %d", 0, 0, $proposal_id);
+    db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = %d, solution_status = %d, solution_provider_name_title = '', 	solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department 	= '', solution_provider_university = '' WHERE id = %d", 0, 0, $proposal_id);
   }
 
   $solution_display = 0;
@@ -738,21 +738,21 @@ function proposal_edit_form_submit($form, &$form_state)
 
   /* updating existing experiments */
   foreach ($form_state['values']['lab_experiment']['update'] as $update_id => $update_value) {
-  	if (strlen(trim($update_value)) >= 1) {
-  		$result = db_query("UPDATE {lab_migration_experiment} SET title = '%s' WHERE id = %d", trim($update_value), $update_id);
-			if (!$result)
-			{
-				drupal_set_message(t('Could not update Title of the Experiment : ') . trim($update_value), 'error');
-			}
-		} else {
-			db_query("DELETE FROM {lab_migration_experiment} WHERE id = %d LIMIT 1", $update_id);
-		}
-	}
+    if (strlen(trim($update_value)) >= 1) {
+      $result = db_query("UPDATE {lab_migration_experiment} SET title = '%s' WHERE id = %d", trim($update_value), $update_id);
+      if (!$result)
+      {
+        drupal_set_message(t('Could not update Title of the Experiment : ') . trim($update_value), 'error');
+      }
+    } else {
+      db_query("DELETE FROM {lab_migration_experiment} WHERE id = %d LIMIT 1", $update_id);
+    }
+  }
 
   /* inserting new experiments */
   $number_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number DESC LIMIT 1", $proposal_id);
   if ($number_data = db_fetch_object($number_q)) {
-  	$number = (int)$number_data->number;
+    $number = (int)$number_data->number;
   	$number++;
   } else {
   	$number = 1;
@@ -778,7 +778,7 @@ function proposal_edit_form_submit($form, &$form_state)
 /**************************** CATEGORY EDIT FORM ******************************/
 /******************************************************************************/
 
-function category_edit_form($form_state)
+function lab_migration_category_edit_form($form_state)
 {
   /* get current proposal */
   $proposal_id = (int)arg(4);
@@ -862,7 +862,7 @@ function category_edit_form($form_state)
   return $form;
 }
 
-function category_edit_form_submit($form, &$form_state)
+function lab_migration_category_edit_form_submit($form, &$form_state)
 {
   /* get current proposal */
   $proposal_id = (int)arg(4);
