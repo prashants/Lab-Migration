@@ -354,7 +354,7 @@ function lab_migration_menu()
  * Implementation of hook_perm().
  */
 function lab_migration_perm() {
-  return array('lab migration create proposal', 'lab migration manage proposal', 'lab migration edit proposal', 'lab migration approve proposal', 'lab migration propose solution', 'lab migration approve code', 'lab migration bulk manage code', 'lab migration bulk delete code', 'lab migration upload code', 'edit uploaded code', 'lab migration download code', 'administer lab migration', 'lab migration generate lab');
+  return array('lab migration create proposal', 'lab migration manage proposal', 'lab migration edit proposal', 'lab migration approve proposal', 'lab migration propose solution', 'lab migration approve code', 'lab migration bulk manage code', 'lab migration bulk delete code', 'lab migration upload code', 'lab migration download code', 'administer lab migration', 'lab migration generate lab');
 }
 
 /* AJAX CALLS */
