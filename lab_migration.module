@@ -22,7 +22,7 @@ function lab_migration_menu()
     'file' => 'proposal.inc',
   );
   $items['lab_migration/manage_proposal'] = array(
-    'title' => 'Manage Lab Migration',
+    'title' => 'LM Manage Lab Proposals',
     'description' => 'Manage Lab Migration Proposals',
     'page callback' => 'lab_migration_proposal_pending',
     'access callback' => 'user_access',
@@ -145,7 +145,7 @@ function lab_migration_menu()
 
   /* CODE REVIEW */
   $items['lab_migration/code_approval'] = array(
-    'title' => 'Manage Code Approval',
+    'title' => 'LM Manage Code Approval',
     'description' => 'Manage Code Approval',
     'page callback' => 'lab_migration_code_approval',
     'access arguments' => array('lab migration approve code'),
