@@ -110,11 +110,11 @@ function lab_migration_solution_proposal_approval_form($form_state)
   	$solution_provider_user_data = user_load($proposal_data->solution_provider_uid);
   	if ($solution_provider_user_data) {
   		$solution_provider .= '<ul>' .
-  								'<li><strong>Solution Provider:</strong> ' . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid) . '</li>' .
-  								'<li><strong>Solution Provider Name:</strong> ' . $proposal_data->solution_provider_name_title . ' ' . $proposal_data->solution_provider_name . '</li>' .
-                  '<li><strong>Department:</strong> ' . $proposal_data->solution_provider_department . '</li>' .
-                  '<li><strong>University:</strong> ' . $proposal_data->solution_provider_university . '</li>' .
-                  '</ul>';
+        '<li><strong>Solution Provider:</strong> ' . l($solution_provider_user_data->name, 'user/' . $proposal_data->solution_provider_uid) . '</li>' .
+        '<li><strong>Solution Provider Name:</strong> ' . $proposal_data->solution_provider_name_title . ' ' . $proposal_data->solution_provider_name . '</li>' .
+        '<li><strong>Department:</strong> ' . $proposal_data->solution_provider_department . '</li>' .
+        '<li><strong>University:</strong> ' . $proposal_data->solution_provider_university . '</li>' .
+        '</ul>';
   	} else {
   		$solution_provider = "User does not exists";
   	}

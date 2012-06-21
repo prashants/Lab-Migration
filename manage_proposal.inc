@@ -399,9 +399,9 @@ function lab_migration_proposal_status_form($form_state)
   default: $proposal_status = t('Unkown'); break;
   }
   $form['proposal_status'] = array(
-      '#type' => 'item',
-      '#value' => $proposal_status,
-      '#title' => t('Proposal Status'),
+    '#type' => 'item',
+    '#value' => $proposal_status,
+    '#title' => t('Proposal Status'),
   );
 
   if ($proposal_data->approval_status == 0)

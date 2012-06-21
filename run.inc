@@ -97,22 +97,22 @@ function lab_migration_run_form($form_state)
     	$user_solution_provider = user_load($lab_details->solution_provider_uid);
     	if ($user_solution_provider) {
     		$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
-      						'<ul>' .
-                  '<li><strong>Solution Provider Name:</strong> ' . $lab_details->solution_provider_name_title . ' ' . $lab_details->solution_provider_name . '</li>' .
-                  '<li><strong>Department:</strong> ' . $lab_details->solution_provider_department . '</li>' .
-                  '<li><strong>University:</strong> ' . $lab_details->solution_provider_university . '</li>' .
-                  '</ul>';
+          '<ul>' .
+          '<li><strong>Solution Provider Name:</strong> ' . $lab_details->solution_provider_name_title . ' ' . $lab_details->solution_provider_name . '</li>' .
+          '<li><strong>Department:</strong> ' . $lab_details->solution_provider_department . '</li>' .
+          '<li><strong>University:</strong> ' . $lab_details->solution_provider_university . '</li>' .
+          '</ul>';
     	} else {
     		$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
-      						'<ul>' .
-      						'<li><strong>Solution Provider: </strong> (Open) </li>' .
-      						'</ul>';
+					'<ul>' .
+					'<li><strong>Solution Provider: </strong> (Open) </li>' .
+					'</ul>';
     	}
     } else {
     	$solution_provider = '<span style="color: rgb(128, 0, 0);"><strong>Solution Provider</strong></span></td><td style="width: 35%;"><br />' .
-      						'<ul>' .
-      						'<li><strong>Solution Provider: </strong> (Open) </li>' .
-      						'</ul>';
+        '<ul>' .
+        '<li><strong>Solution Provider: </strong> (Open) </li>' .
+        '</ul>';
     }
 
     $category_data = lab_migration_get_category_name($lab_details->category);
@@ -120,14 +120,14 @@ function lab_migration_run_form($form_state)
     $form['run']['lab_details'] = array(
       '#type' => 'item',
       '#value' => '<span style="color: rgb(128, 0, 0);"><strong>About the Lab</strong></span></td><td style="width: 35%;"><br />' .
-      						'<ul>' .
-                  '<li><strong>Proposer Name:</strong> ' . $lab_details->name_title . ' ' . $lab_details->name . '</li>' .
-                  '<li><strong>Title of the Lab:</strong> ' . $lab_details->lab_title . '</li>' .
-                  '<li><strong>Department:</strong> ' . $lab_details->department . '</li>' .
-                  '<li><strong>University:</strong> ' . $lab_details->university . '</li>' .
-                  '<li><strong>Category:</strong> ' .  $category_data . '</li>' .
-                  '</ul>' .
-                  $solution_provider,
+        '<ul>' .
+        '<li><strong>Proposer Name:</strong> ' . $lab_details->name_title . ' ' . $lab_details->name . '</li>' .
+        '<li><strong>Title of the Lab:</strong> ' . $lab_details->lab_title . '</li>' .
+        '<li><strong>Department:</strong> ' . $lab_details->department . '</li>' .
+        '<li><strong>University:</strong> ' . $lab_details->university . '</li>' .
+        '<li><strong>Category:</strong> ' .  $category_data . '</li>' .
+        '</ul>' .
+        $solution_provider,
     );
 
     $form['run']['download_lab'] = array(

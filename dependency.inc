@@ -37,20 +37,20 @@ function lab_migration_upload_dependency_form($form_state)
     '#collapsed' => FALSE,
   );
   $form['depfile']['depfile1'] = array(
-      '#type' => 'file',
-      '#title' => t('Upload dependency file'),
-      '#description' => t("Allowed file extensions : ") . variable_get('lab_migration_dependency_extensions', ''),
+    '#type' => 'file',
+    '#title' => t('Upload dependency file'),
+    '#description' => t("Allowed file extensions : ") . variable_get('lab_migration_dependency_extensions', ''),
   );
   $form['depfile']['depfile1_caption'] = array(
-      '#type' => 'textfield',
-      '#title' => t('Caption for dependency file'),
-      '#size' => 15,
-      '#maxlength' => 100,
-      '#required' => TRUE,
+    '#type' => 'textfield',
+    '#title' => t('Caption for dependency file'),
+    '#size' => 15,
+    '#maxlength' => 100,
+    '#required' => TRUE,
   );
   $form['depfile']['depfile1_description'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Brief Description of the dependency file'),
+    '#type' => 'textarea',
+    '#title' => t('Brief Description of the dependency file'),
   );
 
   $form['submit'] = array(
