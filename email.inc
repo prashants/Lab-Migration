@@ -122,7 +122,7 @@ Best Wishes,
     case 'proposal_approved':
 
       /* initializing data */
-      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_disapproved']['proposal_id']);
+      $proposal_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE id = %d LIMIT 1", $params['proposal_approved']['proposal_id']);
       $proposal_data = db_fetch_object($proposal_q);
 
       if ($proposal_data->solution_display == 1) {
@@ -139,7 +139,7 @@ Best Wishes,
 				$solution_provider_user = 'Unknown';
 			}
 
-      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_disapproved']['proposal_id'], 1);
+      $experiment_q = db_query("SELECT * FROM {lab_migration_experiment} WHERE proposal_id = %d ORDER BY number", $params['proposal_approved']['proposal_id'], 1);
       $experiment_list = '
       	';
       while ($experiment_data = db_fetch_object($experiment_q)) {
@@ -147,7 +147,7 @@ Best Wishes,
       	';
       }
 
-      $user_data = user_load($params['proposal_disapproved']['user_id']);
+      $user_data = user_load($params['proposal_approved']['user_id']);
 
       $message['subject'] = t('[!site_name] Your Lab migration proposal has been approved', array('!site_name' => variable_get('site_name', '')), $language->language);
       $message['body'] = t('
