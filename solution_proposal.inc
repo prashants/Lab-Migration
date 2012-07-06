@@ -105,6 +105,14 @@ function lab_migration_solution_proposal_form($form_state)
     '#required' => TRUE,
   );
 
+  $form['solution_provider_expected_completion_date'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Expected Completion Date'),
+    '#description' => t('Input date format should be DD-MM-YYYY. Eg: 23-03-2011'),
+    '#size' => 10,
+    '#maxlength' => 10,
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Apply for Solution')
@@ -121,6 +129,17 @@ function lab_migration_solution_proposal_form_validate($form_state, &$form_state
     form_set_error('', t("You have already applied for a solution. Please compelete that before applying for another solution."));
     drupal_goto('lab_migration/open_proposal');
 	}
+
+  /* date of completion */
+  if (!preg_match('/^[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}$/', $form_state['values']['solution_provider_expected_completion_date']))
+    form_set_error('solution_provider_expected_completion_date', t('Invalid expected date of completion'));
+
+  list($d, $m, $y) = explode('-', $form_state['values']['solution_provider_expected_completion_date']);
+  $d = (int)$d; $m = (int)$m; $y = (int)$y;
+  if (!checkdate($m, $d, $y))
+    form_set_error('solution_provider_expected_completion_date', t('Invalid expected date of completion'));
+  if (mktime(0, 0, 0, $m, $d, $y) <= time())
+   form_set_error('solution_provider_expected_completion_date', t('Expected date of completion should be in future')); 
 }
 
 function lab_migration_solution_proposal_form_submit($form_state, &$form_state)
@@ -141,14 +160,15 @@ function lab_migration_solution_proposal_form_submit($form_state, &$form_state)
     drupal_goto('lab_migration/open_proposal');
   }
 
-  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 1, solution_provider_name_title = '%s', solution_provider_name = '%s', solution_provider_contact_ph = '%s', solution_provider_department = '%s', solution_provider_university = '%s' WHERE id = %d",
-  	$user->uid,
-  	$form_state['values']['solution_provider_name_title'],
-  	$form_state['values']['solution_provider_name'],
-  	$form_state['values']['solution_provider_contact_ph'],
-  	$form_state['values']['solution_provider_department'],
-  	$form_state['values']['solution_provider_university'],
-  	$proposal_id);
+  db_query("UPDATE {lab_migration_proposal} set solution_provider_uid = %d, solution_status = 1, solution_provider_name_title = '%s', solution_provider_name = '%s', solution_provider_contact_ph = '%s', solution_provider_department = '%s', solution_provider_university = '%s', expected_completion_date = '%s' WHERE id = %d",
+    $user->uid,
+    $form_state['values']['solution_provider_name_title'],
+    $form_state['values']['solution_provider_name'],
+    $form_state['values']['solution_provider_contact_ph'],
+    $form_state['values']['solution_provider_department'],
+    $form_state['values']['solution_provider_university'],
+    $form_state['values']['solution_provider_expected_completion_date'],
+    $proposal_id);
 	drupal_set_message("We have received your application. We will get back to you soon.", 'status');
 
   /* sending email */

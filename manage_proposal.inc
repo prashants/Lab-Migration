@@ -30,7 +30,7 @@ function lab_migration_proposal_pending_solution()
   $pending_q = db_query("SELECT * FROM {lab_migration_proposal} WHERE approval_status = 1 ORDER BY id DESC");
   while ($pending_data = db_fetch_object($pending_q))
   {
-    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), date('d-m-Y', $pending_data->approval_date), l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->lab_title, $pending_data->department, l('Status', 'lab_migration/manage_proposal/status/' . $pending_data->id));
+    $pending_rows[$pending_data->id] = array(date('d-m-Y', $pending_data->creation_date), date('d-m-Y', $pending_data->approval_date), $pending_data->expected_completion_date, l($pending_data->name, 'user/' . $pending_data->uid), $pending_data->lab_title, $pending_data->department, l('Status', 'lab_migration/manage_proposal/status/' . $pending_data->id));
   }
 
   /* check if there are any pending proposals */
@@ -40,7 +40,7 @@ function lab_migration_proposal_pending_solution()
     return '';
   }
 
-  $pending_header = array('Date of Submission', 'Date of Approval', 'Name', 'Title of the Lab', 'Department', 'Action');
+  $pending_header = array('Date of Submission', 'Date of Approval', 'Date of Completion', 'Name', 'Title of the Lab', 'Department', 'Action');
   $output = theme_table($pending_header, $pending_rows);
   return $output; 
 }
@@ -745,7 +745,12 @@ function lab_migration_proposal_edit_form_submit($form, &$form_state)
         drupal_set_message(t('Could not update Title of the Experiment : ') . trim($update_value), 'error');
       }
     } else {
-      db_query("DELETE FROM {lab_migration_experiment} WHERE id = %d LIMIT 1", $update_id);
+      $solution_q = db_query("SELECT * FROM {lab_migration_solution} WHERE experiment_id = %d", $update_id);
+      if (db_fetch_object($solution_q)) {
+        form_set_error('', t('Cannot update experiment since there are solutions already uploaded.'));
+      } else {
+        db_query("DELETE FROM {lab_migration_experiment} WHERE id = %d LIMIT 1", $update_id);
+      }
     }
   }
 

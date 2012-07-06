@@ -114,6 +114,7 @@ function lab_migration_solution_proposal_approval_form($form_state)
         '<li><strong>Solution Provider Name:</strong> ' . $proposal_data->solution_provider_name_title . ' ' . $proposal_data->solution_provider_name . '</li>' .
         '<li><strong>Department:</strong> ' . $proposal_data->solution_provider_department . '</li>' .
         '<li><strong>University:</strong> ' . $proposal_data->solution_provider_university . '</li>' .
+        '<li><strong>Date of Completion:</strong> ' . $proposal_data->expected_completion_date . '</li>' .
         '</ul>';
   	} else {
   		$solution_provider = "User does not exists";
@@ -207,7 +208,7 @@ function lab_migration_solution_proposal_approval_form_submit($form, &$form_stat
     drupal_goto('lab_migration/manage_proposal/pending_solution_proposal');
     return;
   } else if ($form_state['values']['approval'] == 2) {
-    db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = 0, solution_status = 0, solution_provider_name_title = '', solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department = '', solution_provider_university = '' WHERE id = %d", $proposal_id);
+    db_query("UPDATE {lab_migration_proposal} SET solution_provider_uid = 0, solution_status = 0, solution_provider_name_title = '', solution_provider_name = '', solution_provider_contact_ph = '', solution_provider_department = '', solution_provider_university = '', expected_completion_date = '' WHERE id = %d", $proposal_id);
 
     /* sending email */
     $email_to = $user_data->mail;

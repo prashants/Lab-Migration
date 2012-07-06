@@ -141,8 +141,8 @@ function lab_migration_schema() {
 			),
 			'expected_completion_date' => array(
 				'description' => t('TODO: please describe this field!'),
-				'type' => 'int',
-				'not null' => TRUE,
+				'type' => 'varchar',
+				'length' => '10',
 			),
 			'message' => array(
 				'description' => t('TODO: please describe this field!'),
