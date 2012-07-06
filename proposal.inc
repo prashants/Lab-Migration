@@ -101,7 +101,7 @@ function lab_migration_proposal_form($form_state)
   for ($counter = 1; $counter <= 15; $counter++) {
 		$form['lab_experiment-' . $counter] = array(
 			'#type' => 'textfield',
-			'#title' => t('Title of the Experiment ') . $counter,
+			'#title' => t('Title of the Experiment ') . $counter . ' : Problem statement',
 			'#size' => 50,
 			'#required' => $first_experiemnt,
 			);

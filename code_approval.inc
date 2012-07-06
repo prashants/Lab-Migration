@@ -105,7 +105,7 @@ function lab_migration_code_approval_form($form_state)
   $form['experiment']['title'] = array(
     '#type' => 'item',
     '#value' => $experiment_data->title,
-    '#title' => t('Title of the Experiment'),
+    '#title' => t('Title of the Experiment : Problem Statement'),
   );
 
   $form['back_to_list'] = array(

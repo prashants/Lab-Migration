@@ -141,7 +141,7 @@ function lab_migration_run_form($form_state)
 
     $form['run']['experiment'] = array(
       '#type' => 'select',
-      '#title' => t('Title of the Experiment'),
+      '#title' => t('Title of the Experiment : Problem statement'),
       '#options' => _list_of_experiments($lab_default_value),
       '#default_value' => $experiment_default_value,
       '#tree' => TRUE,

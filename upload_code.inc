@@ -126,7 +126,7 @@ function lab_migration_upload_code_form($form_state)
   }
   $form['experiment'] = array(
     '#type' => 'select',
-    '#title' => t('Title of the Experiment'),
+    '#title' => t('Title of the Experiment : Problem statement'),
     '#options' => $experiment_rows,
     '#multiple' => FALSE,
     '#size' => 1,
