@@ -107,7 +107,7 @@ function lab_migration_dependency_approval_form_submit($form, &$form_state)
 
 	if ($form_state['clicked_button']['#value'] == 'Submit')
 	{
-	  if (user_access('bulk manage code'))
+	  if (user_access('lab migration bulk manage code'))
     {
       if ($form_state['values']['run']['delete_dependency'] == "1")
       {
